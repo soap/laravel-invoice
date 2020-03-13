@@ -4,10 +4,10 @@
 [![Software License][ico-license]](LICENSE.md)
 [![Build Status][ico-travis]][link-travis]
 [![Total Downloads][ico-downloads]][link-downloads]
+  
+![PHP Composer](https://github.com/neptunesoftware/laravel-invoicable/workflows/PHP%20Composer/badge.svg?branch=master)
 
 Easy invoice creation for Laravel. Unlike Laravel Cashier, this package is payment gateway agnostic.
-
-If you're looking for Mollie payment processing, be sure to check out [laravel-payable-redirect-mollie](https://github.com/sandervanhooft/laravel-payable-redirect-mollie).
 
 ## Structure
 
