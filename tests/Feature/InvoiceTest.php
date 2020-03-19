@@ -36,7 +36,7 @@ class InvoiceTest extends AbstractTestCase
     {
         $this->assertEquals("0", (string)$this->invoice->total);
         $this->assertEquals("0", (string)$this->invoice->tax);
-        $this->assertEquals("EUR", $this->invoice->currency);
+        $this->assertEquals(config('invoicable.default_currency'), $this->invoice->currency);
         $this->assertEquals("concept", $this->invoice->status);
         $this->assertNotNull($this->invoice->reference);
     }

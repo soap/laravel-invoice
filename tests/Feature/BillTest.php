@@ -35,7 +35,7 @@ class BillTest extends AbstractTestCase
     {
         $this->assertEquals("0", (string)$this->bill->total);
         $this->assertEquals("0", (string)$this->bill->tax);
-        $this->assertEquals("EUR", $this->bill->currency);
+        $this->assertEquals(config('invoicable.default_currency'), $this->bill->currency);
         $this->assertEquals("concept", $this->bill->status);
         $this->assertNotNull($this->bill->reference);
     }
