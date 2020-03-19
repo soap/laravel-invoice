@@ -6,9 +6,9 @@ namespace NeptuneSoftware\Invoicable\Services;
 use Dompdf\Dompdf;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
-use NeptuneSoftware\Invoicable\Invoice;
+use NeptuneSoftware\Invoicable\Models\Invoice;
 use NeptuneSoftware\Invoicable\MoneyFormatter;
-use NeptuneSoftware\Invoicable\Services\Interfaces\InvoiceServiceInterface;
+use NeptuneSoftware\Invoicable\Interfaces\InvoiceServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class InvoiceService implements InvoiceServiceInterface
@@ -24,12 +24,21 @@ class InvoiceService implements InvoiceServiceInterface
     private $reference;
 
     /**
-     * RoleService constructor.
-     * @param Invoice $invoiceModel
+     * @inheritDoc
      */
-    public function __construct(Invoice $invoiceModel)
+    public function create(Model $model, ?array $invoice = []): InvoiceServiceInterface
     {
-        $this->invoiceModel = $invoiceModel;
+        $this->invoiceModel = $model->invoices()->create($invoice);
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getInvoice(): Invoice
+    {
+        return $this->invoiceModel;
     }
 
     /**
@@ -145,7 +154,7 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * @inheritDoc
      */
-    public static function findByReference(string $reference): ?Invoice
+    public function findByReference(string $reference): ?Invoice
     {
         return Invoice::where('reference', $reference)->first();
     }
@@ -153,7 +162,7 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * @inheritDoc
      */
-    public static function findByReferenceOrFail(string $reference): Invoice
+    public function findByReferenceOrFail(string $reference): Invoice
     {
         return Invoice::where('reference', $reference)->firstOrFail();
     }

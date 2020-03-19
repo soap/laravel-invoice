@@ -6,10 +6,10 @@ namespace NeptuneSoftware\Invoicable\Services;
 use Dompdf\Dompdf;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
-use NeptuneSoftware\Invoicable\Bill;
+use NeptuneSoftware\Invoicable\Models\Bill;
 use NeptuneSoftware\Invoicable\MoneyFormatter;
 use NeptuneSoftware\Invoicable\Scopes\InvoiceScope;
-use NeptuneSoftware\Invoicable\Services\Interfaces\BillServiceInterface;
+use NeptuneSoftware\Invoicable\Interfaces\BillServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class BillService implements BillServiceInterface
@@ -25,14 +25,22 @@ class BillService implements BillServiceInterface
     private $reference;
 
     /**
-     * RoleService constructor.
-     * @param Bill $billModel
+     * @inheritDoc
      */
-    public function __construct(Bill $billModel)
+    public function create(Model $model, ?array $bill = []): BillServiceInterface
     {
-        $this->billModel = $billModel;
+        $this->billModel = $model->bills()->create($bill);
+
+        return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getBill(): Bill
+    {
+        return $this->billModel;
+    }
 
     /**
      * @inheritDoc
@@ -147,7 +155,7 @@ class BillService implements BillServiceInterface
     /**
      * @inheritDoc
      */
-    public static function findByReference(string $reference): ?Bill
+    public function findByReference(string $reference): ?Bill
     {
         return Bill::where('reference', $reference)->withoutGlobalScope(InvoiceScope::class)->first();
     }
@@ -155,7 +163,7 @@ class BillService implements BillServiceInterface
     /**
      * @inheritDoc
      */
-    public static function findByReferenceOrFail(string $reference): Bill
+    public function findByReferenceOrFail(string $reference): Bill
     {
         return Bill::where('reference', $reference)->withoutGlobalScope(InvoiceScope::class)->firstOrFail();
     }
