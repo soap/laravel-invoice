@@ -19,7 +19,7 @@ class MoneyFormatter
      */
     protected $locale;
 
-    public function __construct($currency = 'EUR', $locale = 'nl_NL')
+    public function __construct(string $currency = 'TRY', string $locale = 'tr_TR')
     {
         $this->currency = $currency;
         $this->locale = $locale;
