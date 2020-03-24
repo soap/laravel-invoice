@@ -45,8 +45,8 @@ class InvoiceTest extends AbstractTestCase
     {
         $this->invoice = $this->service->create($this->customerModel)->getInvoice();
 
-        $invoice = $this->service->setReference($this->productModel)->addAmountExclTax(100, 'Some description', 0.21);
-        $invoice = $this->service->setReference($this->productModel)->addAmountExclTax(100, 'Some description', 0.21);
+        $invoice = $this->service->setInvoiceable($this->productModel)->addAmountExclTax(100, 'Some description', 0.21);
+        $invoice = $this->service->setInvoiceable($this->productModel)->addAmountExclTax(100, 'Some description', 0.21);
 
         $this->assertEquals("242", (string)$invoice->total);
         $this->assertEquals("42", (string)$invoice->tax);
@@ -57,8 +57,8 @@ class InvoiceTest extends AbstractTestCase
     {
         $this->invoice = $this->service->create($this->customerModel)->getInvoice();
 
-        $invoice = $this->service->setReference($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $invoice = $this->service->setReference($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $invoice = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $invoice = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
 
         $this->assertEquals("242", (string)$invoice->total);
         $this->assertEquals("42", (string)$invoice->tax);
@@ -69,9 +69,9 @@ class InvoiceTest extends AbstractTestCase
     {
         $this->invoice = $this->service->create($this->customerModel)->getInvoice();
 
-        $invoice = $this->service->setReference($this->productModel)
+        $invoice = $this->service->setInvoiceable($this->productModel)
             ->addAmountInclTax(121, 'Some description', 0.21);
-        $invoice = $this->service->setReference($this->productModel)
+        $invoice = $this->service->setInvoiceable($this->productModel)
             ->addAmountInclTax(-121, 'Some negative amount description', 0.21);
 
         $this->assertEquals("0", (string)$invoice->total);
@@ -91,8 +91,8 @@ class InvoiceTest extends AbstractTestCase
     /** @test */
     public function canGetInvoiceView()
     {
-        $this->service->setReference($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $this->service->setReference($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
         $view = $this->service->view();
         $rendered = $view->render(); // fails if view cannot be rendered
         $this->assertTrue(true);
@@ -101,8 +101,8 @@ class InvoiceTest extends AbstractTestCase
     /** @test */
     public function canGetInvoicePdf()
     {
-        $this->service->setReference($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $this->service->setReference($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
         $pdf = $this->service->pdf();  // fails if pdf cannot be rendered
         $this->assertTrue(true);
     }
@@ -110,8 +110,8 @@ class InvoiceTest extends AbstractTestCase
     /** @test */
     public function canDownloadInvoicePdf()
     {
-        $this->service->setReference($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $this->service->setReference($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
         $download = $this->service->download(); // fails if pdf cannot be rendered
         $this->assertTrue(true);
     }
@@ -136,16 +136,16 @@ class InvoiceTest extends AbstractTestCase
     }
 
     /** @test */
-    public function canAccessInvoicable()
+    public function canAccessRelated()
     {
         // Check if correctly set on invoice
-        $this->assertEquals(CustomerTestModel::class, $this->invoice->invoicable_type);
-        $this->assertEquals($this->customerModel->id, $this->invoice->invoicable_id);
+        $this->assertEquals(CustomerTestModel::class, $this->invoice->related_type);
+        $this->assertEquals($this->customerModel->id, $this->invoice->related_id);
 
-        // Check if invoicable is accessible
-        $this->assertNotNull($this->invoice->invoicable);
-        $this->assertEquals(CustomerTestModel::class, get_class($this->invoice->invoicable));
-        $this->assertEquals($this->customerModel->id, $this->invoice->invoicable->id);
+        // Check if related is accessible
+        $this->assertNotNull($this->invoice->related);
+        $this->assertEquals(CustomerTestModel::class, get_class($this->invoice->related));
+        $this->assertEquals($this->customerModel->id, $this->invoice->related->id);
     }
 
     /**
@@ -157,8 +157,8 @@ class InvoiceTest extends AbstractTestCase
     {
         $this->invoice = $this->service->create($this->customerModel)->getInvoice();
 
-        $invoice = $this->service->setReference($this->productModel)->addAmountExclTaxWithAllValues(0, 'Some description', 0);
-        $invoice = $this->service->setReference($this->productModel)->addAmountExclTaxWithAllValues(121, 'Some description', 0.21);
+        $invoice = $this->service->$this->setInvoiceable($this->productModel)->addAmountExclTaxWithAllValues(0, 'Some description', 0);
+        $invoice = $this->service->$this->setInvoiceable($this->productModel)->addAmountExclTaxWithAllValues(121, 'Some description', 0.21);
         $this->assertEquals(0, $invoice->lines()->first()->amount);
         $this->assertGreaterThan(0, $invoice->lines->last()->amount);
     }

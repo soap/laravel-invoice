@@ -17,8 +17,8 @@ class CreateInvoicesTables extends Migration
 
         Schema::create($tableNames['invoices'], function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('invoicable_id');
-            $table->string('invoicable_type');
+            $table->uuid('related_id');
+            $table->string('related_type');
             $table->bigInteger('tax')->default(0)->description('in cents');
             $table->bigInteger('total')->default(0)->description('in cents, including tax');
             $table->bigInteger('discount')->default(0)->description('in cents');
@@ -44,8 +44,8 @@ class CreateInvoicesTables extends Migration
             $table->float('tax_percentage')->default(0);
             $table->uuid('invoice_id')->index();
             $table->char('description', 255);
-            $table->uuid('reference_id');
-            $table->string('reference_type');
+            $table->uuid('invoiceable_id');
+            $table->string('invoiceable_type');
             $table->char('name', 255)->nullable();
             $table->bigInteger('discount')->default(0)->description('in cents');
             $table->bigInteger('quantity')->default(1);
@@ -55,7 +55,7 @@ class CreateInvoicesTables extends Migration
             $table->softDeletes();
 
 
-            $table->index(['reference_id', 'reference_type']);
+            $table->index(['invoiceable_id', 'invoiceable_type']);
             $table->foreign('invoice_id')->references('id')->on('invoices');
         });
     }

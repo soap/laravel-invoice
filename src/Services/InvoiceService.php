@@ -19,9 +19,9 @@ class InvoiceService implements InvoiceServiceInterface
     private $invoiceModel;
 
     /**
-     * @var Model $reference
+     * @var Model $invoiceable
      */
-    private $reference;
+    private $invoiceable;
 
     /**
      * @inheritDoc
@@ -44,9 +44,9 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * @inheritDoc
      */
-    public function setReference(Model $model): InvoiceServiceInterface
+    public function setInvoiceable(Model $model): InvoiceServiceInterface
     {
-        $this->reference = $model;
+        $this->invoiceable = $model;
 
         return $this;
     }
@@ -54,11 +54,8 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * @inheritDoc
      */
-    public function addAmountExclTax(
-        $amount,
-        $description,
-        $taxPercentage = 0
-    ): Invoice {
+    public function addAmountExclTax($amount, $description, $taxPercentage = 0): Invoice
+    {
         $tax = $amount * $taxPercentage;
 
         $this->invoiceModel->lines()->create([
@@ -66,8 +63,8 @@ class InvoiceService implements InvoiceServiceInterface
             'description'    => $description,
             'tax'            => $tax,
             'tax_percentage' => $taxPercentage,
-            'reference_id'   => $this->reference->id,
-            'reference_type' => get_class($this->reference),
+            'invoiceable_id'   => $this->invoiceable->id,
+            'invoiceable_type' => get_class($this->invoiceable),
         ]);
         return $this->recalculate();
     }
@@ -75,18 +72,15 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * @inheritDoc
      */
-    public function addAmountInclTax(
-        $amount,
-        $description,
-        $taxPercentage = 0
-    ): Invoice {
+    public function addAmountInclTax($amount, $description, $taxPercentage = 0): Invoice
+    {
         $this->invoiceModel->lines()->create([
             'amount'         => $amount,
             'description'    => $description,
             'tax'            => $amount - $amount / (1 + $taxPercentage),
             'tax_percentage' => $taxPercentage,
-            'reference_id'   => $this->reference->id,
-            'reference_type' => get_class($this->reference),
+            'invoiceable_id'   => $this->invoiceable->id,
+            'invoiceable_type' => get_class($this->invoiceable),
         ]);
 
         return $this->recalculate();

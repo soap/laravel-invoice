@@ -14,7 +14,7 @@ trait InvoicableTrait
      */
     public function invoices()
     {
-        return $this->morphMany(Invoice::class, 'invoicable');
+        return $this->morphMany(Invoice::class, 'related');
     }
 
     /**
@@ -22,6 +22,6 @@ trait InvoicableTrait
      */
     public function bills()
     {
-        return $this->morphMany(Bill::class, 'invoicable');
+        return $this->morphMany(Bill::class, 'related');
     }
 }
