@@ -19,7 +19,7 @@ class Invoice extends Model
      * @var array
      */
     protected $fillable = [
-        'invoicable_id', 'invoicable_type', 'tax',  'total', 'discount', 'currency',
+        'related_id', 'related_type', 'tax',  'total', 'discount', 'currency',
         'reference', 'status', 'receiver_info', 'sender_info', 'payment_info', 'note', 'is_bill'
     ];
 
@@ -68,7 +68,7 @@ class Invoice extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function invoicable()
+    public function related()
     {
         return $this->morphTo();
     }
