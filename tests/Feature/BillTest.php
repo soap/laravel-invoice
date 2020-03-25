@@ -12,9 +12,24 @@ class BillTest extends AbstractTestCase
 {
     use DatabaseMigrations;
 
+    /**
+     * @var \NeptuneSoftware\Invoicable\Models\Bill $bill
+     */
     private $bill;
+
+    /**
+     * @var ProductTestModel $productModel
+     */
     private $productModel;
+
+    /**
+     * @var CustomerTestModel $customerModel
+     */
     private $customerModel;
+
+    /**
+     * @var BillServiceInterface $service
+     */
     private $service;
 
     public function setUp(): void
@@ -44,11 +59,11 @@ class BillTest extends AbstractTestCase
     {
         $this->bill = $this->service->create($this->customerModel)->getBill();
 
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountExclTax(100, 'Some description', 0.21);
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountExclTax(100, 'Some description', 0.21);
+        $this->service->addAmountExclTax($this->productModel, 100, 'Some description', 0.21);
+        $this->service->addAmountExclTax($this->productModel, 100, 'Some description', 0.21);
 
-        $this->assertEquals("242", (string)$bill->total);
-        $this->assertEquals("42", (string)$bill->tax);
+        $this->assertEquals("242", (string) $this->service->getBill()->total);
+        $this->assertEquals("42", (string) $this->service->getBill()->tax);
     }
 
     /** @test */
@@ -56,11 +71,11 @@ class BillTest extends AbstractTestCase
     {
         $this->bill = $this->service->create($this->customerModel)->getBill();
 
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
 
-        $this->assertEquals("242", (string)$bill->total);
-        $this->assertEquals("42", (string)$bill->tax);
+        $this->assertEquals("242", (string) $this->service->getBill()->total);
+        $this->assertEquals("42", (string) $this->service->getBill()->tax);
     }
 
     /** @test */
@@ -68,11 +83,11 @@ class BillTest extends AbstractTestCase
     {
         $this->bill = $this->service->create($this->customerModel)->getBill();
 
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(-121, 'Some negative amount description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, -121, 'Some negative amount description', 0.21);
 
-        $this->assertEquals("0", (string)$bill->total);
-        $this->assertEquals("0", (string)$bill->tax);
+        $this->assertEquals("0", (string) $this->service->getBill()->total);
+        $this->assertEquals("0", (string) $this->service->getBill()->tax);
     }
 
     /** @test */
@@ -88,8 +103,8 @@ class BillTest extends AbstractTestCase
     /** @test */
     public function canGetInvoiceView()
     {
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
         $view = $this->service->view();
         $rendered = $view->render(); // fails if view cannot be rendered
         $this->assertTrue(true);
@@ -98,8 +113,8 @@ class BillTest extends AbstractTestCase
     /** @test */
     public function canGetInvoicePdf()
     {
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
         $pdf = $this->service->pdf();  // fails if pdf cannot be rendered
         $this->assertTrue(true);
     }
@@ -107,8 +122,8 @@ class BillTest extends AbstractTestCase
     /** @test */
     public function canDownloadInvoicePdf()
     {
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
         $download = $this->service->download(); // fails if pdf cannot be rendered
         $this->assertTrue(true);
     }

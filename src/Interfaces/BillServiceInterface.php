@@ -24,30 +24,26 @@ interface BillServiceInterface
     public function getBill(): Bill;
 
     /**
-     * Set reference invoice line model.
-     *
-     * @param Model $model Eloquent model.
-     * @return $this
-     */
-    public function setInvoiceable(Model $model): self;
-
-    /**
      * Use this if the amount does not yet include tax.
-     * @param Int $amount The amount in cents, excluding taxes
-     * @param String $description The description
-     * @param int $taxPercentage The tax percentage (i.e. 0.21). Defaults to 0
+     *
+     * @param Model  $model          Set reference invoice line model
+     * @param Int    $amount         The amount in cents, excluding taxes
+     * @param String $description    The description
+     * @param float  $taxPercentage  The tax percentage (i.e. 0.21). Defaults to 0
      * @return Bill This instance after recalculation
      */
-    public function addAmountExclTax($amount, $description, $taxPercentage = 0): Bill;
+    public function addAmountExclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): Bill;
 
     /**
      * Use this if the amount already includes tax.
-     * @param Int $amount The amount in cents, including taxes
-     * @param String $description The description
-     * @param int $taxPercentage The tax percentage (i.e. 0.21). Defaults to 0
+     *
+     * @param Model  $model          Set reference invoice line model
+     * @param Int    $amount         The amount in cents, excluding taxes
+     * @param String $description    The description
+     * @param float    $taxPercentage  The tax percentage (i.e. 0.21). Defaults to 0
      * @return Bill This instance after recalculation
      */
-    public function addAmountInclTax($amount, $description, $taxPercentage = 0): Bill;
+    public function addAmountInclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): Bill;
 
     /**
      * Recalculates total and tax based on lines

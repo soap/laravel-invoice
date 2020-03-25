@@ -20,11 +20,6 @@ class BillService implements BillServiceInterface
     private $billModel;
 
     /**
-     * @var Model $invoiceable
-     */
-    private $invoiceable;
-
-    /**
      * @inheritDoc
      */
     public function create(Model $model, ?array $bill = []): BillServiceInterface
@@ -45,27 +40,17 @@ class BillService implements BillServiceInterface
     /**
      * @inheritDoc
      */
-    public function setInvoiceable(Model $model): BillServiceInterface
-    {
-        $this->invoiceable = $model;
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function addAmountExclTax($amount, $description, $taxPercentage = 0): Bill
+    public function addAmountExclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): Bill
     {
         $tax = $amount * $taxPercentage;
 
         $this->billModel->lines()->create([
-            'amount'         => $amount + $tax,
-            'description'    => $description,
-            'tax'            => $tax,
-            'tax_percentage' => $taxPercentage,
-            'invoiceable_id'   => $this->invoiceable->id,
-            'invoiceable_type' => get_class($this->invoiceable),
+            'amount'           => $amount + $tax,
+            'description'      => $description,
+            'tax'              => $tax,
+            'tax_percentage'   => $taxPercentage,
+            'invoiceable_id'   => $model->id,
+            'invoiceable_type' => get_class($model),
         ]);
         return $this->recalculate();
     }
@@ -73,15 +58,15 @@ class BillService implements BillServiceInterface
     /**
      * @inheritDoc
      */
-    public function addAmountInclTax($amount, $description, $taxPercentage = 0): Bill
+    public function addAmountInclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): Bill
     {
         $this->billModel->lines()->create([
-            'amount'         => $amount,
-            'description'    => $description,
-            'tax'            => $amount - $amount / (1 + $taxPercentage),
-            'tax_percentage' => $taxPercentage,
-            'invoiceable_id'   => $this->invoiceable->id,
-            'invoiceable_type' => get_class($this->invoiceable),
+            'amount'           => $amount,
+            'description'      => $description,
+            'tax'              => $amount - $amount / (1 + $taxPercentage),
+            'tax_percentage'   => $taxPercentage,
+            'invoiceable_id'   => $model->id,
+            'invoiceable_type' => get_class($model),
         ]);
 
         return $this->recalculate();

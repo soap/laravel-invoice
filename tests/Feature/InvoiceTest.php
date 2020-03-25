@@ -45,8 +45,8 @@ class InvoiceTest extends AbstractTestCase
     {
         $this->invoice = $this->service->create($this->customerModel)->getInvoice();
 
-        $invoice = $this->service->setInvoiceable($this->productModel)->addAmountExclTax(100, 'Some description', 0.21);
-        $invoice = $this->service->setInvoiceable($this->productModel)->addAmountExclTax(100, 'Some description', 0.21);
+        $invoice = $this->service->addAmountExclTax($this->productModel, 100, 'Some description', 0.21);
+        $invoice = $this->service->addAmountExclTax($this->productModel, 100, 'Some description', 0.21);
 
         $this->assertEquals("242", (string)$invoice->total);
         $this->assertEquals("42", (string)$invoice->tax);
@@ -57,8 +57,8 @@ class InvoiceTest extends AbstractTestCase
     {
         $this->invoice = $this->service->create($this->customerModel)->getInvoice();
 
-        $invoice = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $invoice = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $invoice = $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
+        $invoice = $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
 
         $this->assertEquals("242", (string)$invoice->total);
         $this->assertEquals("42", (string)$invoice->tax);
@@ -69,10 +69,8 @@ class InvoiceTest extends AbstractTestCase
     {
         $this->invoice = $this->service->create($this->customerModel)->getInvoice();
 
-        $invoice = $this->service->setInvoiceable($this->productModel)
-            ->addAmountInclTax(121, 'Some description', 0.21);
-        $invoice = $this->service->setInvoiceable($this->productModel)
-            ->addAmountInclTax(-121, 'Some negative amount description', 0.21);
+        $invoice = $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
+        $invoice = $this->service->addAmountInclTax($this->productModel, -121, 'Some negative amount description', 0.21);
 
         $this->assertEquals("0", (string)$invoice->total);
         $this->assertEquals("0", (string)$invoice->tax);
@@ -91,8 +89,8 @@ class InvoiceTest extends AbstractTestCase
     /** @test */
     public function canGetInvoiceView()
     {
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
         $view = $this->service->view();
         $rendered = $view->render(); // fails if view cannot be rendered
         $this->assertTrue(true);
@@ -101,8 +99,8 @@ class InvoiceTest extends AbstractTestCase
     /** @test */
     public function canGetInvoicePdf()
     {
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
         $pdf = $this->service->pdf();  // fails if pdf cannot be rendered
         $this->assertTrue(true);
     }
@@ -110,8 +108,8 @@ class InvoiceTest extends AbstractTestCase
     /** @test */
     public function canDownloadInvoicePdf()
     {
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->productModel, 121, 'Some description', 0.21);
         $download = $this->service->download(); // fails if pdf cannot be rendered
         $this->assertTrue(true);
     }
