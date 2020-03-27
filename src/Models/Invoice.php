@@ -52,6 +52,7 @@ class Invoice extends Model
 
             $model->total     = 0;
             $model->tax       = 0;
+            $model->discount  = 0;
             $model->is_bill   = false;
             $model->currency  = config('invoicable.default_currency', 'TRY');
             $model->status    = config('invoicable.default_status', 'concept');
