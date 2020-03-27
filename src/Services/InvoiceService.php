@@ -132,12 +132,12 @@ class InvoiceService implements InvoiceServiceInterface
      */
     public function recalculate(): Invoice
     {
-        $free          = $this->invoice->lines()->where('is_free', true)->get();
-        $complimentary = $this->invoice->lines()->where('is_complimentary', true)->get();
-        $other         = $this->invoice->lines()
-                                       ->where('is_free', false)
-                                       ->where('is_complimentary', false)
-                                       ->get();
+        $lines         = $this->getLines();
+        $free          = $lines->where('is_free', true)->toBase();
+        $complimentary = $lines->where('is_complimentary', true)->toBase();
+        $other         = $lines->where('is_free', false)
+                               ->where('is_complimentary', false)
+                               ->toBase();
 
         $this->invoice->total    = $other->sum('amount');
         $this->invoice->tax      = $other->sum('tax');

@@ -133,12 +133,13 @@ class BillService implements BillServiceInterface
      */
     public function recalculate(): Bill
     {
-        $free          = $this->bill->lines()->where('is_free', true)->get();
-        $complimentary = $this->bill->lines()->where('is_complimentary', true)->get();
-        $other         = $this->bill->lines()
+        $lines         = $this->bill->lines()->get();
+        $free          = $lines->where('is_free', true)->toBase();
+        $complimentary = $lines->where('is_complimentary', true)->toBase();
+        $other         = $lines
                                        ->where('is_free', false)
                                        ->where('is_complimentary', false)
-                                       ->get();
+                                       ->toBase();
 
         $this->bill->total    = $other->sum('amount');
         $this->bill->tax      = $other->sum('tax');
