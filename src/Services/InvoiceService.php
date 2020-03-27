@@ -4,6 +4,7 @@
 namespace NeptuneSoftware\Invoicable\Services;
 
 use Dompdf\Dompdf;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
 use NeptuneSoftware\Invoicable\Models\Invoice;
@@ -14,21 +15,26 @@ use Symfony\Component\HttpFoundation\Response;
 class InvoiceService implements InvoiceServiceInterface
 {
     /**
-     * @var Invoice $invoiceModel
+     * @var Invoice $invoice
      */
-    private $invoiceModel;
+    private $invoice;
 
     /**
-     * @var Model $invoiceable
+     * @var bool $is_free
      */
-    private $invoiceable;
+    private $is_free = false;
+
+    /**
+     * @var bool $is_comp
+     */
+    private $is_comp = false;
 
     /**
      * @inheritDoc
      */
     public function create(Model $model, ?array $invoice = []): InvoiceServiceInterface
     {
-        $this->invoiceModel = $model->invoices()->create($invoice);
+        $this->invoice = $model->invoices()->create($invoice);
 
         return $this;
     }
@@ -38,15 +44,24 @@ class InvoiceService implements InvoiceServiceInterface
      */
     public function getInvoice(): Invoice
     {
-        return $this->invoiceModel;
+        return $this->invoice;
     }
 
     /**
      * @inheritDoc
      */
-    public function setInvoiceable(Model $model): InvoiceServiceInterface
+    public function getLines(): Collection
     {
-        $this->invoiceable = $model;
+        return $this->getInvoice()->lines()->get();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setFree(): InvoiceServiceInterface
+    {
+        $this->is_free = true;
+        $this->is_comp = false;
 
         return $this;
     }
@@ -54,36 +69,62 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * @inheritDoc
      */
-    public function addAmountExclTax($amount, $description, $taxPercentage = 0): Invoice
+    public function setComplimentary(): InvoiceServiceInterface
     {
-        $tax = $amount * $taxPercentage;
+        $this->is_comp = true;
+        $this->is_free = false;
 
-        $this->invoiceModel->lines()->create([
-            'amount'         => $amount + $tax,
-            'description'    => $description,
-            'tax'            => $tax,
-            'tax_percentage' => $taxPercentage,
-            'invoiceable_id'   => $this->invoiceable->id,
-            'invoiceable_type' => get_class($this->invoiceable),
-        ]);
-        return $this->recalculate();
+        return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function addAmountInclTax($amount, $description, $taxPercentage = 0): Invoice
+    public function addAmountExclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): InvoiceServiceInterface
     {
-        $this->invoiceModel->lines()->create([
-            'amount'         => $amount,
-            'description'    => $description,
-            'tax'            => $amount - $amount / (1 + $taxPercentage),
-            'tax_percentage' => $taxPercentage,
-            'invoiceable_id'   => $this->invoiceable->id,
-            'invoiceable_type' => get_class($this->invoiceable),
+        $tax = $amount * $taxPercentage;
+
+        $this->invoice->lines()->create([
+            'amount'           => $amount + $tax,
+            'description'      => $description,
+            'tax'              => $tax,
+            'tax_percentage'   => $taxPercentage,
+            'invoiceable_id'   => $model->id,
+            'invoiceable_type' => get_class($model),
+            'is_free'          => $this->is_free,
+            'is_complimentary' => $this->is_comp,
         ]);
 
-        return $this->recalculate();
+        $this->is_free = false;
+        $this->is_comp = false;
+
+        $this->recalculate();
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addAmountInclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): InvoiceServiceInterface
+    {
+        $this->invoice->lines()->create([
+            'amount'           => $amount,
+            'description'      => $description,
+            'tax'              => $amount - $amount / (1 + $taxPercentage),
+            'tax_percentage'   => $taxPercentage,
+            'invoiceable_id'   => $model->id,
+            'invoiceable_type' => get_class($model),
+            'is_free'          => $this->is_free,
+            'is_complimentary' => $this->is_comp,
+        ]);
+
+        $this->is_free = false;
+        $this->is_comp = false;
+
+        $this->recalculate();
+
+        return $this;
     }
 
     /**
@@ -91,10 +132,19 @@ class InvoiceService implements InvoiceServiceInterface
      */
     public function recalculate(): Invoice
     {
-        $this->invoiceModel->total = $this->invoiceModel->lines()->sum('amount');
-        $this->invoiceModel->tax = $this->invoiceModel->lines()->sum('tax');
-        $this->invoiceModel->save();
-        return $this->invoiceModel;
+        $lines         = $this->getLines();
+        $free          = $lines->where('is_free', true)->toBase();
+        $complimentary = $lines->where('is_complimentary', true)->toBase();
+        $other         = $lines->where('is_free', false)
+                               ->where('is_complimentary', false)
+                               ->toBase();
+
+        $this->invoice->total    = $other->sum('amount');
+        $this->invoice->tax      = $other->sum('tax');
+        $this->invoice->discount = $free->sum('amount') + $complimentary->sum('amount') + $other->sum('discount');
+
+        $this->invoice->save();
+        return $this->invoice;
     }
 
     /**
@@ -103,9 +153,9 @@ class InvoiceService implements InvoiceServiceInterface
     public function view(array $data = []): \Illuminate\Contracts\View\View
     {
         return View::make('invoicable::receipt', array_merge($data, [
-            'invoice' => $this->invoiceModel,
+            'invoice' => $this->invoice,
             'moneyFormatter' => new MoneyFormatter(
-                $this->invoiceModel->currency,
+                $this->invoice->currency,
                 config('invoicable.locale')
             ),
         ]));
@@ -135,7 +185,7 @@ class InvoiceService implements InvoiceServiceInterface
      */
     public function download(array $data = []): Response
     {
-        $filename = $this->invoiceModel->reference . '.pdf';
+        $filename = $this->invoice->reference . '.pdf';
 
         return new Response($this->pdf($data), 200, [
             'Content-Description' => 'File Transfer',

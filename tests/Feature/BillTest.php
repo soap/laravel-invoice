@@ -5,110 +5,129 @@ namespace NeptuneSoftware\Invoicable\Feature;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use NeptuneSoftware\Invoicable\AbstractTestCase;
 use NeptuneSoftware\Invoicable\CustomerTestModel;
-use NeptuneSoftware\Invoicable\ProductTestModel;
 use NeptuneSoftware\Invoicable\Interfaces\BillServiceInterface;
+use NeptuneSoftware\Invoicable\ProductTestModel;
 
 class BillTest extends AbstractTestCase
 {
     use DatabaseMigrations;
 
     private $bill;
-    private $productModel;
-    private $customerModel;
+
+    /**
+     * @var ProductTestModel $product
+     */
+    private $product;
+
+    /**
+     * @var CustomerTestModel $customer
+     */
+    private $customer;
+
+    /**
+     * @var BillServiceInterface $service
+     */
     private $service;
+
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->customerModel = new CustomerTestModel();
-        $this->customerModel->save();
-        $this->productModel = new ProductTestModel();
-        $this->productModel->save();
+        $this->customer = new CustomerTestModel();
+        $this->customer->save();
+        $this->product = new ProductTestModel();
+        $this->product->save();
 
-        $this->service = $this->app->make(BillServiceInterface::class);
-        $this->bill = $this->service->create($this->customerModel)->getBill()->fresh();
+        $this->service  = $this->app->make(BillServiceInterface::class);
+    }
+
+
+    /** @test */
+    public function canCreateBill()
+    {
+        $new_bill = $this->service->create($this->customer)->getBill();
+
+        $this->assertEquals('0', (string) $new_bill->total);
+        $this->assertEquals('0', (string) $new_bill->tax);
+        $this->assertEquals('TRY', $new_bill->currency);
+        $this->assertEquals('concept', $new_bill->status);
+        $this->assertNotNull($new_bill->reference);
     }
 
     /** @test */
-    public function canCreateInvoice()
+    public function canAddAmountExclTaxToBill()
     {
-        $this->assertEquals("0", (string)$this->bill->total);
-        $this->assertEquals("0", (string)$this->bill->tax);
-        $this->assertEquals('TRY', $this->bill->currency);
-        $this->assertEquals("concept", $this->bill->status);
-        $this->assertNotNull($this->bill->reference);
+        $this->service->create($this->customer);
+
+        $this->service->addAmountExclTax($this->product, 100, 'Some description', 0.21);
+        $this->service->addAmountExclTax($this->product, 100, 'Some description', 0.21);
+
+        $this->assertEquals('242', (string) $this->service->getBill()->total);
+        $this->assertEquals('42', (string) $this->service->getBill()->tax);
     }
 
     /** @test */
-    public function canAddAmountExclTaxToInvoice()
+    public function canAddAmountInclTaxToBill()
     {
-        $this->bill = $this->service->create($this->customerModel)->getBill();
+        $new_bill = $this->service->create($this->customer)->getBill();
 
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountExclTax(100, 'Some description', 0.21);
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountExclTax(100, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
 
-        $this->assertEquals("242", (string)$bill->total);
-        $this->assertEquals("42", (string)$bill->tax);
-    }
-
-    /** @test */
-    public function canAddAmountInclTaxToInvoice()
-    {
-        $this->bill = $this->service->create($this->customerModel)->getBill();
-
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-
-        $this->assertEquals("242", (string)$bill->total);
-        $this->assertEquals("42", (string)$bill->tax);
+        $this->assertEquals('242', (string) $new_bill->total);
+        $this->assertEquals('42', (string) $new_bill->tax);
     }
 
     /** @test */
     public function canHandleNegativeAmounts()
     {
-        $this->bill = $this->service->create($this->customerModel)->getBill();
+        $new_bill = $this->service->create($this->customer)->getBill();
 
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(-121, 'Some negative amount description', 0.21);
+        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->product, -121, 'Some negative amount description', 0.21);
 
-        $this->assertEquals("0", (string)$bill->total);
-        $this->assertEquals("0", (string)$bill->tax);
+        $this->assertEquals('0', (string) $new_bill->total);
+        $this->assertEquals('0', (string) $new_bill->tax);
     }
 
     /** @test */
     public function hasUniqueReference()
     {
         $references = array_map(function () {
-            return $this->service->create($this->customerModel)->getBill()->reference;
+            return $this->service->create($this->customer)->getBill()->reference;
         }, range(1, 100));
 
         $this->assertCount(100, array_unique($references));
     }
 
     /** @test */
-    public function canGetInvoiceView()
+    public function canGetBillView()
     {
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $bill = $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->create($this->customer);
+
+        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
         $view = $this->service->view();
         $rendered = $view->render(); // fails if view cannot be rendered
         $this->assertTrue(true);
     }
 
     /** @test */
-    public function canGetInvoicePdf()
+    public function canGetBillPdf()
     {
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->create($this->customer);
+        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
         $pdf = $this->service->pdf();  // fails if pdf cannot be rendered
         $this->assertTrue(true);
     }
 
     /** @test */
-    public function canDownloadInvoicePdf()
+    public function canDownloadBillPdf()
     {
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
-        $this->service->setInvoiceable($this->productModel)->addAmountInclTax(121, 'Some description', 0.21);
+        $this->service->create($this->customer);
+        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
+        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
         $download = $this->service->download(); // fails if pdf cannot be rendered
         $this->assertTrue(true);
     }
@@ -116,13 +135,15 @@ class BillTest extends AbstractTestCase
     /** @test */
     public function canFindByReference()
     {
-        $this->assertEquals($this->bill->id, $this->service->findByReference($this->bill->reference)->id);
+        $new_bill = $this->service->create($this->customer)->getBill();
+        $this->assertEquals($new_bill->id, $this->service->findByReference($new_bill->reference)->id);
     }
 
     /** @test */
     public function canFindByReferenceOrFail()
     {
-        $this->assertEquals($this->bill->id, $this->service->findByReferenceOrFail($this->bill->reference)->id);
+        $new_bill = $this->service->create($this->customer)->getBill();
+        $this->assertEquals($new_bill->id, $this->service->findByReferenceOrFail($new_bill->reference)->id);
     }
 
     /** @test */
@@ -135,143 +156,67 @@ class BillTest extends AbstractTestCase
     /** @test */
     public function canAccessRelated()
     {
-        // Check if correctly set on invoice
-        $this->assertEquals(CustomerTestModel::class, $this->bill->related_type);
-        $this->assertEquals($this->customerModel->id, $this->bill->related_id);
+        $new_bill = $this->service->create($this->customer)->getBill();
+        // Check if correctly set on bill
+        $this->assertEquals(CustomerTestModel::class, $new_bill->related_type);
+        $this->assertEquals($this->customer->id, $new_bill->related_id);
 
-        // Check if invoicable is accessible
-        $this->assertNotNull($this->bill->related);
-        $this->assertEquals(CustomerTestModel::class, get_class($this->bill->related));
-        $this->assertEquals($this->customerModel->id, $this->bill->related->id);
+        // Check if related is accessible
+        $this->assertNotNull($new_bill->related);
+        $this->assertEquals(CustomerTestModel::class, get_class($new_bill->related));
+        $this->assertEquals($this->customer->id, $new_bill->related->id);
     }
 
-    /**
-     * @test
-     */
-    /*
-    public function ifIsFreeEqualToTrueShouldBeAmountEqualToZero()
+    /** @test */
+    public function canSaleFree()
     {
-        $invoicable_id = $this->productModel->id;
-        $invoicable_type = get_class($this->productModel);
-        $this->bill = $this->service->create($this->customerModel)->getBill();
+        $new_bill = $this->service->create($this->customer)->getBill();
 
-        $bill = $this->service->addAmountExclTaxWithAllValues(
-            0,
-            'Some description',
-            $invoicable_id,
-            $invoicable_type,
-            true,
-            false,
-            0
-        );
-        $bill = $this->service->addAmountExclTaxWithAllValues(
-            121,
-            'Some description',
-            $invoicable_id,
-            $invoicable_type,
-            false,
-            false,
-            0
-        );
+        $this->service->setFree()->addAmountExclTax($this->product, 100, 'Free sale', 0.21);
+        $this->service->addAmountExclTax($this->product, 100, 'Some description', 0.21);
 
-        $this->assertEquals(0, $bill->lines()->first()->amount);
+        $this->assertEquals('121', (string) $new_bill->total);
+        $this->assertEquals('21', (string) $new_bill->tax);
+        $this->assertEquals('121', (string) $new_bill->discount);
     }
-    */
 
-    /**
-     * @test
-     */
-    /*
-    public function ifIsFreeEqualToFalseShouldBeAmountGreaterThanZero()
+    /** @test */
+    public function canSaleComplimentary()
     {
-        $invoicable_id = $this->productModel->id;
-        $invoicable_type = get_class($this->productModel);
-        $this->bill = $this->service->create($this->customerModel)->getBill();
+        $new_bill = $this->service->create($this->customer)->getBill();
 
-        $bill = $this->service->addAmountExclTax(0, 'Some description', $invoicable_id, $invoicable_type, 0);
-        $bill = $this->service->addAmountExclTax(121, 'Some description', $invoicable_id, $invoicable_type, 0.21);
+        $this->service->setComplimentary()->addAmountExclTax($this->product, 100, 'Complimentary sale', 0.21);
+        $this->service->addAmountExclTax($this->product, 100, 'Some description', 0.21);
 
-        $this->assertGreaterThan(0, $bill->lines->last()->amount);
+        $this->assertEquals('121', (string) $new_bill->total);
+        $this->assertEquals('21', (string) $new_bill->tax);
+        $this->assertEquals('121', (string) $new_bill->discount);
     }
-    */
 
-    /**
-     * @test
-     */
-    /*
-    public function ifIsComplimentaryEqualToTrueShouldBeAmountEqualToZero()
+    /** @test */
+    public function canSaleComplimentaryAndFree()
     {
-        $invoicable_id = $this->productModel->id;
-        $invoicable_type = get_class($this->productModel);
-        $this->bill = $this->service->create($this->customerModel)->getBill();
+        $new_bill = $this->service->create($this->customer)->getBill();
 
-        $bill = $this->service->addAmountExclTaxWithAllValues(
-            0,
-            'Some description',
-            $invoicable_id,
-            $invoicable_type,
-            false,
-            true,
-            0
-        );
-        $bill = $this->service->addAmountExclTaxWithAllValues(
-            121,
-            'Some description',
-            $invoicable_id,
-            $invoicable_type,
-            false,
-            false,
-            0.21
-        );
+        $this->service->setComplimentary()->addAmountExclTax($this->product, 100, 'Complimentary sale', 0.21);
+        $this->service->setFree()->addAmountInclTax($this->product, 121, 'Free sale', 0.21);
 
-        $this->assertEquals(0, $bill->lines()->first()->amount);
+        $this->assertEquals('0', (string) $new_bill->total);
+        $this->assertEquals('0', (string) $new_bill->tax);
+        $this->assertEquals('242', (string) $new_bill->discount);
     }
-    */
 
-    /**
-     * @test
-     */
-    /*
-    public function ifIsComplimentaryEqualToFalseShouldBeAmountGreaterThanZero()
+    /** @test */
+    public function canSaleComplimentaryAndFreeAndRegular()
     {
-        $invoicable_id = $this->productModel->id;
-        $invoicable_type = get_class($this->productModel);
-        $this->bill = $this->service->create($this->customerModel)->getBill();
+        $new_bill = $this->service->create($this->customer)->getBill();
 
-        $bill = $this->service->addAmountExclTax(0, 'Some description', $invoicable_id, $invoicable_type, 0);
-        $bill = $this->service->addAmountExclTax(121, 'Some description', $invoicable_id, $invoicable_type, 0.21);
+        $this->service->setComplimentary()->addAmountExclTax($this->product, 100, 'Complimentary sale', 0.21);
+        $this->service->setFree()->addAmountInclTax($this->product, 121, 'Free sale', 0.21);
+        $this->service->addAmountInclTax($this->product, 121, 'Regular sale', 0.21);
 
-        $this->assertGreaterThan(0, $bill->lines->last()->amount);
+        $this->assertEquals('121', (string) $new_bill->total);
+        $this->assertEquals('21', (string) $new_bill->tax);
+        $this->assertEquals('242', (string) $new_bill->discount);
     }
-    */
-
-    /**
-     * @test
-     */
-    /*
-    public function ifIsBillEqualToTrueShouldBeReturnSumBills()
-    {
-        $invoicable_id = $this->productModel->id;
-        $invoicable_type = get_class($this->productModel);
-        $this->bill = $this->service->create($this->customerModel)->getBill();
-
-        $bill = $this->service->addAmountExclTax(
-            121,
-            'Some description',
-            $invoicable_id,
-            $invoicable_type,
-            0
-        );
-        $bill = $this->service->addAmountExclTax(
-            121,
-            'Some description',
-            $invoicable_id,
-            $invoicable_type,
-            0
-        );
-
-
-        $this->assertGreaterThan(0, $bill->lines->last()->amount);
-    }
-    */
 }
