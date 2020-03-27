@@ -50,8 +50,10 @@ class Invoice extends Model
                 $model->{$model->getKeyName()} = Str::uuid()->toString();
             }
 
+            $model->total     = 0;
+            $model->tax       = 0;
             $model->is_bill   = false;
-            $model->currency  = config('invoicable.default_currency', 'EUR');
+            $model->currency  = config('invoicable.default_currency', 'TRY');
             $model->status    = config('invoicable.default_status', 'concept');
             $model->reference = InvoiceReferenceGenerator::generate();
         });
