@@ -1,6 +1,7 @@
 <?php
 namespace NeptuneSoftware\Invoicable\Interfaces;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use NeptuneSoftware\Invoicable\Models\Bill;
@@ -46,15 +47,32 @@ interface BillServiceInterface
     public function setComplimentary(): BillServiceInterface;
 
     /**
+     * Add tax for an bill line.
+     *
+     * @param string $identifier
+     * @param float $taxPercentage
+     * @return BillServiceInterface
+     */
+    public function addTaxPercentage(string $identifier, float $taxPercentage = 0): BillServiceInterface;
+
+    /**
+     * Add tax for an bill line.
+     *
+     * @param string $identifier
+     * @param int $taxAmount
+     * @return BillServiceInterface
+     */
+    public function addTaxAmount(string $identifier, int $taxAmount = 0): BillServiceInterface;
+
+    /**
      * Use this if the amount does not yet include tax.
      *
      * @param Model  $model          Set reference invoice line model
      * @param Int    $amount         The amount in cents, excluding taxes
      * @param String $description    The description
-     * @param float  $taxPercentage  The tax percentage (i.e. 0.21). Defaults to 0
      * @return self This instance after recalculation
      */
-    public function addAmountExclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): self;
+    public function addAmountExclTax(Model $model, int $amount, string $description): self;
 
     /**
      * Use this if the amount already includes tax.
@@ -62,10 +80,9 @@ interface BillServiceInterface
      * @param Model  $model          Set reference invoice line model
      * @param Int    $amount         The amount in cents, excluding taxes
      * @param String $description    The description
-     * @param float    $taxPercentage  The tax percentage (i.e. 0.21). Defaults to 0
      * @return self This instance after recalculation
      */
-    public function addAmountInclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): self;
+    public function addAmountInclTax(Model $model, int $amount, string $description): self;
 
     /**
      * Recalculates total and tax based on lines
@@ -79,7 +96,7 @@ interface BillServiceInterface
      * @param  array  $data
      * @return \Illuminate\View\View
      */
-    public function view(array $data = []): \Illuminate\Contracts\View\View;
+    public function view(array $data = []): View;
 
     /**
      * Capture the invoice as a PDF and return the raw bytes.

@@ -7,10 +7,10 @@ use Dompdf\Dompdf;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
+use NeptuneSoftware\Invoicable\Interfaces\BillServiceInterface;
 use NeptuneSoftware\Invoicable\Models\Bill;
 use NeptuneSoftware\Invoicable\MoneyFormatter;
 use NeptuneSoftware\Invoicable\Scopes\InvoiceScope;
-use NeptuneSoftware\Invoicable\Interfaces\BillServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class BillService implements BillServiceInterface
@@ -29,6 +29,11 @@ class BillService implements BillServiceInterface
      * @var bool $is_comp
      */
     private $is_comp = false;
+
+    /**
+     * @var array $taxes
+     */
+    private $taxes = [];
 
     /**
      * @inheritDoc
@@ -81,23 +86,49 @@ class BillService implements BillServiceInterface
     /**
      * @inheritDoc
      */
-    public function addAmountExclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): BillServiceInterface
+    public function addTaxPercentage(string $identifier, float $taxPercentage = 0): BillServiceInterface
     {
-        $tax = $amount * $taxPercentage;
+        $this->taxes[] = [
+            'identifier'     => $identifier,
+            'tax_amount'     => null,
+            'tax_percentage' => $taxPercentage,
+        ];
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addTaxAmount(string $identifier, int $taxAmount = 0): BillServiceInterface
+    {
+        $this->taxes[] = [
+            'identifier'     => $identifier,
+            'tax_amount'     => $taxAmount,
+            'tax_percentage' => null,
+        ];
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addAmountExclTax(Model $model, int $amount, string $description): BillServiceInterface
+    {
+        $tax = 0;
+        foreach ($this->taxes as $each) {
+            $tax += (null === $each['tax_amount']) ? $amount * $each['tax_percentage'] : $each['tax_amount'];
+        }
 
         $this->bill->lines()->create([
             'amount'           => $amount + $tax,
             'description'      => $description,
             'tax'              => $tax,
-            'tax_percentage'   => $taxPercentage,
+            'tax_details'      => $this->taxes,
             'invoiceable_id'   => $model->id,
             'invoiceable_type' => get_class($model),
             'is_free'          => $this->is_free,
             'is_complimentary' => $this->is_comp,
         ]);
-
-        $this->is_free = false;
-        $this->is_comp = false;
 
         $this->recalculate();
 
@@ -107,21 +138,23 @@ class BillService implements BillServiceInterface
     /**
      * @inheritDoc
      */
-    public function addAmountInclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): BillServiceInterface
+    public function addAmountInclTax(Model $model, int $amount, string $description): BillServiceInterface
     {
+        $tax = 0;
+        foreach ($this->taxes as $each) {
+            $tax += (null === $each['tax_amount']) ? ($amount * $each['tax_percentage']) / (1 + $each['tax_percentage']) : $each['tax_amount'];
+        }
+
         $this->bill->lines()->create([
             'amount'           => $amount,
             'description'      => $description,
-            'tax'              => $amount - $amount / (1 + $taxPercentage),
-            'tax_percentage'   => $taxPercentage,
+            'tax'              => $tax,
+            'tax_details'      => $this->taxes,
             'invoiceable_id'   => $model->id,
             'invoiceable_type' => get_class($model),
             'is_free'          => $this->is_free,
             'is_complimentary' => $this->is_comp,
         ]);
-
-        $this->is_free = false;
-        $this->is_comp = false;
 
         $this->recalculate();
 
@@ -146,6 +179,11 @@ class BillService implements BillServiceInterface
         $this->bill->discount = $free->sum('amount') + $complimentary->sum('amount') + $other->sum('discount');
 
         $this->bill->save();
+
+        $this->is_free = false;
+        $this->is_comp = false;
+        $this->taxes   = [];
+
         return $this->bill;
     }
 
