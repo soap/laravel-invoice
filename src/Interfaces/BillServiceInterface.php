@@ -47,7 +47,7 @@ interface BillServiceInterface
     public function setComplimentary(): BillServiceInterface;
 
     /**
-     * Add tax for an bill line.
+     * Add percentage tax for an bill line.
      *
      * @param string $identifier
      * @param float $taxPercentage
@@ -56,13 +56,13 @@ interface BillServiceInterface
     public function addTaxPercentage(string $identifier, float $taxPercentage = 0): BillServiceInterface;
 
     /**
-     * Add tax for an bill line.
+     * Add fixed tax for an bill line.
      *
      * @param string $identifier
-     * @param int $taxAmount
+     * @param int $taxFixed
      * @return BillServiceInterface
      */
-    public function addTaxAmount(string $identifier, int $taxAmount = 0): BillServiceInterface;
+    public function addTaxFixed(string $identifier, int $taxFixed = 0): BillServiceInterface;
 
     /**
      * Use this if the amount does not yet include tax.

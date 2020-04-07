@@ -83,8 +83,8 @@ class BillTest extends AbstractTestCase
     {
         $this->service->create($this->customer);
 
-        $this->service->addTaxAmount('VAT', 21)->addAmountExclTax($this->product, 100, 'Some description');
-        $this->service->addTaxAmount('VAT', 21)->addAmountExclTax($this->product, 100, 'Some description');
+        $this->service->addTaxFixed('VAT', 21)->addAmountExclTax($this->product, 100, 'Some description');
+        $this->service->addTaxFixed('VAT', 21)->addAmountExclTax($this->product, 100, 'Some description');
 
         $this->assertEquals('242', (string) $this->service->getBill()->total);
         $this->assertEquals('42', (string) $this->service->getBill()->tax);
@@ -95,8 +95,8 @@ class BillTest extends AbstractTestCase
     {
         $new_bill = $this->service->create($this->customer)->getBill();
 
-        $this->service->addTaxAmount('VAT', 21)->addAmountInclTax($this->product, 121, 'Some description');
-        $this->service->addTaxAmount('VAT', 21)->addAmountInclTax($this->product, 121, 'Some description');
+        $this->service->addTaxFixed('VAT', 21)->addAmountInclTax($this->product, 121, 'Some description');
+        $this->service->addTaxFixed('VAT', 21)->addAmountInclTax($this->product, 121, 'Some description');
 
         $this->assertEquals('242', (string) $new_bill->total);
         $this->assertEquals('42', (string) $new_bill->tax);
@@ -107,7 +107,7 @@ class BillTest extends AbstractTestCase
     {
         $this->service->create($this->customer);
 
-        $this->service->addTaxAmount('VAT', 21)->addAmountExclTax($this->product, 100, 'Some description');
+        $this->service->addTaxFixed('VAT', 21)->addAmountExclTax($this->product, 100, 'Some description');
         $this->service->addTaxPercentage('VAT', 0.21)->addAmountExclTax($this->product, 100, 'Some description');
 
         $this->assertEquals('242', (string) $this->service->getBill()->total);
@@ -119,7 +119,7 @@ class BillTest extends AbstractTestCase
     {
         $new_bill = $this->service->create($this->customer)->getBill();
 
-        $this->service->addTaxAmount('VAT', 21)->addAmountInclTax($this->product, 121, 'Some description');
+        $this->service->addTaxFixed('VAT', 21)->addAmountInclTax($this->product, 121, 'Some description');
         $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Some description');
 
         $this->assertEquals('242', (string) $new_bill->total);
@@ -132,9 +132,9 @@ class BillTest extends AbstractTestCase
         $new_bill = $this->service->create($this->customer);
 
         $this->service
-            ->addTaxAmount('TAX1', 1)
+            ->addTaxFixed('TAX1', 1)
             ->addTaxPercentage('TAX2', 0.21)
-            ->addTaxAmount('TAX3', 30)
+            ->addTaxFixed('TAX3', 30)
             ->addAmountExclTax($this->product, 100, 'Some description');
 
         $this->assertEquals('152', (string) $new_bill->getBill()->total);
@@ -147,9 +147,9 @@ class BillTest extends AbstractTestCase
         $new_bill = $this->service->create($this->customer)->getBill();
 
         $this->service
-            ->addTaxAmount('TAX1', 1)
+            ->addTaxFixed('TAX1', 1)
             ->addTaxPercentage('TAX2', 0.21)
-            ->addTaxAmount('TAX3', 30)
+            ->addTaxFixed('TAX3', 30)
             ->addAmountInclTax($this->product, 152, 'Some description');
 
         $this->assertEquals('152', (string) $new_bill->total);

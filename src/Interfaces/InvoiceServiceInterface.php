@@ -47,7 +47,7 @@ interface InvoiceServiceInterface
     public function setComplimentary(): InvoiceServiceInterface;
 
     /**
-     * Add tax for an invoice line.
+     * Add percentage tax for an invoice line.
      *
      * @param string $identifier
      * @param float $taxPercentage
@@ -56,13 +56,13 @@ interface InvoiceServiceInterface
     public function addTaxPercentage(string $identifier, float $taxPercentage = 0): InvoiceServiceInterface;
 
     /**
-     * Add tax for an invoice line.
+     * Add fixed tax for an invoice line.
      *
      * @param string $identifier
-     * @param int $taxAmount
+     * @param int $taxFixed
      * @return InvoiceServiceInterface
      */
-    public function addTaxAmount(string $identifier, int $taxAmount = 0): InvoiceServiceInterface;
+    public function addTaxFixed(string $identifier, int $taxFixed = 0): InvoiceServiceInterface;
 
     /**
      * Use this if the amount does not yet include tax.

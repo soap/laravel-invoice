@@ -90,7 +90,7 @@ class BillService implements BillServiceInterface
     {
         array_push($this->taxes, [
             'identifier'     => $identifier,
-            'tax_amount'     => null,
+            'tax_fixed'     => null,
             'tax_percentage' => $taxPercentage,
         ]);
         return $this;
@@ -99,11 +99,11 @@ class BillService implements BillServiceInterface
     /**
      * @inheritDoc
      */
-    public function addTaxAmount(string $identifier, int $taxAmount = 0): BillServiceInterface
+    public function addTaxFixed(string $identifier, int $taxAmount = 0): BillServiceInterface
     {
         array_unshift($this->taxes, [
             'identifier'     => $identifier,
-            'tax_amount'     => $taxAmount,
+            'tax_fixed'     => $taxAmount,
             'tax_percentage' => null,
         ]);
         return $this;
@@ -116,7 +116,7 @@ class BillService implements BillServiceInterface
     {
         $tax = 0;
         foreach ($this->taxes as $each) {
-            $tax += (null === $each['tax_amount']) ? $amount * $each['tax_percentage'] : $each['tax_amount'];
+            $tax += (null === $each['tax_fixed']) ? $amount * $each['tax_percentage'] : $each['tax_fixed'];
         }
 
         $this->bill->lines()->create([
@@ -143,9 +143,9 @@ class BillService implements BillServiceInterface
         $exc = $amount;
         $tax = 0;
         foreach ($this->taxes as $each) {
-            if (null !== $each['tax_amount']) {
-                $exc -= $each['tax_amount'];
-                $tax += $each['tax_amount'];
+            if (null !== $each['tax_fixed']) {
+                $exc -= $each['tax_fixed'];
+                $tax += $each['tax_fixed'];
             } else {
                 $tax += ($exc * $each['tax_percentage']) / (1 + $each['tax_percentage']);
             }

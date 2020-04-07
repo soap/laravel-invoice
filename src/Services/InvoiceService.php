@@ -89,7 +89,7 @@ class InvoiceService implements InvoiceServiceInterface
     {
         array_push($this->taxes, [
             'identifier'     => $identifier,
-            'tax_amount'     => null,
+            'tax_fixed'      => null,
             'tax_percentage' => $taxPercentage,
         ]);
         return $this;
@@ -98,11 +98,11 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * @inheritDoc
      */
-    public function addTaxAmount(string $identifier, int $taxAmount = 0): InvoiceServiceInterface
+    public function addTaxFixed(string $identifier, int $taxFixed = 0): InvoiceServiceInterface
     {
         array_unshift($this->taxes, [
             'identifier'     => $identifier,
-            'tax_amount'     => $taxAmount,
+            'tax_fixed'      => $taxFixed,
             'tax_percentage' => null,
         ]);
         return $this;
@@ -115,7 +115,7 @@ class InvoiceService implements InvoiceServiceInterface
     {
         $tax = 0;
         foreach ($this->taxes as $each) {
-            $tax += (null === $each['tax_amount']) ? $amount * $each['tax_percentage'] : $each['tax_amount'];
+            $tax += (null === $each['tax_fixed']) ? $amount * $each['tax_percentage'] : $each['tax_fixed'];
         }
 
         $this->invoice->lines()->create([
@@ -142,9 +142,9 @@ class InvoiceService implements InvoiceServiceInterface
         $exc = $amount;
         $tax = 0;
         foreach ($this->taxes as $each) {
-            if (null !== $each['tax_amount']) {
-                $exc -= $each['tax_amount'];
-                $tax += $each['tax_amount'];
+            if (null !== $each['tax_fixed']) {
+                $exc -= $each['tax_fixed'];
+                $tax += $each['tax_fixed'];
             } else {
                 $tax += ($exc * $each['tax_percentage']) / (1 + $each['tax_percentage']);
             }
