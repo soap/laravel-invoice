@@ -88,11 +88,11 @@ class BillService implements BillServiceInterface
      */
     public function addTaxPercentage(string $identifier, float $taxPercentage = 0): BillServiceInterface
     {
-        $this->taxes[] = [
+        array_push($this->taxes, [
             'identifier'     => $identifier,
             'tax_amount'     => null,
             'tax_percentage' => $taxPercentage,
-        ];
+        ]);
         return $this;
     }
 
@@ -101,11 +101,11 @@ class BillService implements BillServiceInterface
      */
     public function addTaxAmount(string $identifier, int $taxAmount = 0): BillServiceInterface
     {
-        $this->taxes[] = [
+        array_unshift($this->taxes, [
             'identifier'     => $identifier,
             'tax_amount'     => $taxAmount,
             'tax_percentage' => null,
-        ];
+        ]);
         return $this;
     }
 
@@ -140,9 +140,15 @@ class BillService implements BillServiceInterface
      */
     public function addAmountInclTax(Model $model, int $amount, string $description): BillServiceInterface
     {
+        $exc = $amount;
         $tax = 0;
         foreach ($this->taxes as $each) {
-            $tax += (null === $each['tax_amount']) ? ($amount * $each['tax_percentage']) / (1 + $each['tax_percentage']) : $each['tax_amount'];
+            if (null !== $each['tax_amount']) {
+                $exc -= $each['tax_amount'];
+                $tax += $each['tax_amount'];
+            } else {
+                $tax += ($exc * $each['tax_percentage']) / (1 + $each['tax_percentage']);
+            }
         }
 
         $this->bill->lines()->create([

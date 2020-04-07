@@ -127,6 +127,36 @@ class InvoiceTest extends AbstractTestCase
     }
 
     /** @test */
+    public function canAddAmountExclMultipleTaxToInvoice()
+    {
+        $new_invoice = $this->service->create($this->customer);
+
+        $this->service
+            ->addTaxAmount('TAX1', 1)
+            ->addTaxPercentage('TAX2', 0.21)
+            ->addTaxAmount('TAX3', 30)
+            ->addAmountExclTax($this->product, 100, 'Some description');
+
+        $this->assertEquals('152', (string) $new_invoice->getInvoice()->total);
+        $this->assertEquals('52', (string) $new_invoice->getInvoice()->tax);
+    }
+
+    /** @test */
+    public function canAddAmountInclMultipleTaxToInvoice()
+    {
+        $new_invoice = $this->service->create($this->customer)->getInvoice();
+
+        $this->service
+            ->addTaxAmount('TAX1', 1)
+            ->addTaxPercentage('TAX2', 0.21)
+            ->addTaxAmount('TAX3', 30)
+            ->addAmountInclTax($this->product, 152, 'Some description');
+
+        $this->assertEquals('152', (string) $new_invoice->total);
+        $this->assertEquals('52', (string) $new_invoice->tax);
+    }
+
+    /** @test */
     public function canHandleNegativeAmounts()
     {
         $new_invoice = $this->service->create($this->customer)->getInvoice();

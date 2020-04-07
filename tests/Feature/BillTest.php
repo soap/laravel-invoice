@@ -127,6 +127,37 @@ class BillTest extends AbstractTestCase
     }
 
     /** @test */
+    public function canAddAmountExclMultipleTaxToBill()
+    {
+        $new_bill = $this->service->create($this->customer);
+
+        $this->service
+            ->addTaxAmount('TAX1', 1)
+            ->addTaxPercentage('TAX2', 0.21)
+            ->addTaxAmount('TAX3', 30)
+            ->addAmountExclTax($this->product, 100, 'Some description');
+
+        $this->assertEquals('152', (string) $new_bill->getBill()->total);
+        $this->assertEquals('52', (string) $new_bill->getBill()->tax);
+    }
+
+    /** @test */
+    public function canAddAmountInclMultipleTaxToBill()
+    {
+        $new_bill = $this->service->create($this->customer)->getBill();
+
+        $this->service
+            ->addTaxAmount('TAX1', 1)
+            ->addTaxPercentage('TAX2', 0.21)
+            ->addTaxAmount('TAX3', 30)
+            ->addAmountInclTax($this->product, 152, 'Some description');
+
+        $this->assertEquals('152', (string) $new_bill->total);
+        $this->assertEquals('52', (string) $new_bill->tax);
+    }
+
+
+    /** @test */
     public function canHandleNegativeAmounts()
     {
         $new_bill = $this->service->create($this->customer)->getBill();
