@@ -30,6 +30,11 @@ class InvoiceService implements InvoiceServiceInterface
     private $is_comp = false;
 
     /**
+     * @var array $taxes
+     */
+    private $taxes = [];
+
+    /**
      * @inheritDoc
      */
     public function create(Model $model, ?array $invoice = []): InvoiceServiceInterface
@@ -80,23 +85,49 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * @inheritDoc
      */
-    public function addAmountExclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): InvoiceServiceInterface
+    public function addTaxPercentage(string $identifier, float $taxPercentage = 0): InvoiceServiceInterface
     {
-        $tax = $amount * $taxPercentage;
+        array_push($this->taxes, [
+            'identifier'     => $identifier,
+            'tax_fixed'      => null,
+            'tax_percentage' => $taxPercentage,
+        ]);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addTaxFixed(string $identifier, int $taxFixed = 0): InvoiceServiceInterface
+    {
+        array_unshift($this->taxes, [
+            'identifier'     => $identifier,
+            'tax_fixed'      => $taxFixed,
+            'tax_percentage' => null,
+        ]);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addAmountExclTax(Model $model, int $amount, string $description): InvoiceServiceInterface
+    {
+        $tax = 0;
+        foreach ($this->taxes as $each) {
+            $tax += (null === $each['tax_fixed']) ? $amount * $each['tax_percentage'] : $each['tax_fixed'];
+        }
 
         $this->invoice->lines()->create([
             'amount'           => $amount + $tax,
             'description'      => $description,
             'tax'              => $tax,
-            'tax_percentage'   => $taxPercentage,
+            'tax_details'      => $this->taxes,
             'invoiceable_id'   => $model->id,
             'invoiceable_type' => get_class($model),
             'is_free'          => $this->is_free,
             'is_complimentary' => $this->is_comp,
         ]);
-
-        $this->is_free = false;
-        $this->is_comp = false;
 
         $this->recalculate();
 
@@ -106,21 +137,28 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * @inheritDoc
      */
-    public function addAmountInclTax(Model $model, int $amount, string $description, float $taxPercentage = 0): InvoiceServiceInterface
+    public function addAmountInclTax(Model $model, int $amount, string $description): InvoiceServiceInterface
     {
+        $exc = $amount;
+        $tax = 0;
+        foreach ($this->taxes as $each) {
+            if (null !== $each['tax_fixed']) {
+                $exc -= $each['tax_fixed'];
+                $tax += $each['tax_fixed'];
+            } else {
+                $tax += ($exc * $each['tax_percentage']) / (1 + $each['tax_percentage']);
+            }
+        }
+
         $this->invoice->lines()->create([
             'amount'           => $amount,
             'description'      => $description,
-            'tax'              => $amount - $amount / (1 + $taxPercentage),
-            'tax_percentage'   => $taxPercentage,
+            'tax'              => $tax,
             'invoiceable_id'   => $model->id,
             'invoiceable_type' => get_class($model),
             'is_free'          => $this->is_free,
             'is_complimentary' => $this->is_comp,
         ]);
-
-        $this->is_free = false;
-        $this->is_comp = false;
 
         $this->recalculate();
 
@@ -144,6 +182,11 @@ class InvoiceService implements InvoiceServiceInterface
         $this->invoice->discount = $free->sum('amount') + $complimentary->sum('amount') + $other->sum('discount');
 
         $this->invoice->save();
+
+        $this->is_free = false;
+        $this->is_comp = false;
+        $this->taxes   = [];
+
         return $this->invoice;
     }
 

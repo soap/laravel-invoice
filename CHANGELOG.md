@@ -4,13 +4,15 @@ All Notable changes to `laravel-invoicable` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
-## v0.1.0 - 2020-03-18
+## v0.1.0 - 2020-04-07
 
 ### Added
 - Bills for receiving invoices
 - Free or complimentary sale for invoice lines
 - Polymorphic customer and polymorphic product relationships
 - Service layer
+- Multiple tax for each invoice line
+- Supporting fixed or percentage tax
 
 ### Changed
 - Package name

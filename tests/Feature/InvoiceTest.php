@@ -55,27 +55,105 @@ class InvoiceTest extends AbstractTestCase
     }
 
     /** @test */
-    public function canAddAmountExclTaxToInvoice()
+    public function canAddAmountExclTaxPercentageToInvoice()
     {
         $this->service->create($this->customer);
 
-        $this->service->addAmountExclTax($this->product, 100, 'Some description', 0.21);
-        $this->service->addAmountExclTax($this->product, 100, 'Some description', 0.21);
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountExclTax($this->product, 100, 'Some description');
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountExclTax($this->product, 100, 'Some description');
 
         $this->assertEquals('242', (string) $this->service->getInvoice()->total);
         $this->assertEquals('42', (string) $this->service->getInvoice()->tax);
     }
 
     /** @test */
-    public function canAddAmountInclTaxToInvoice()
+    public function canAddAmountInclTaxPercentageToInvoice()
     {
         $new_invoice = $this->service->create($this->customer)->getInvoice();
 
-        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
-        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Some description');
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Some description');
 
         $this->assertEquals('242', (string) $new_invoice->total);
         $this->assertEquals('42', (string) $new_invoice->tax);
+    }
+
+    /** @test */
+    public function canAddAmountExclTaxAmountToInvoice()
+    {
+        $this->service->create($this->customer);
+
+        $this->service->addTaxFixed('VAT', 21)->addAmountExclTax($this->product, 100, 'Some description');
+        $this->service->addTaxFixed('VAT', 21)->addAmountExclTax($this->product, 100, 'Some description');
+
+        $this->assertEquals('242', (string) $this->service->getInvoice()->total);
+        $this->assertEquals('42', (string) $this->service->getInvoice()->tax);
+    }
+
+    /** @test */
+    public function canAddAmountInclTaxAmountToInvoice()
+    {
+        $new_invoice = $this->service->create($this->customer)->getInvoice();
+
+        $this->service->addTaxFixed('VAT', 21)->addAmountInclTax($this->product, 121, 'Some description');
+        $this->service->addTaxFixed('VAT', 21)->addAmountInclTax($this->product, 121, 'Some description');
+
+        $this->assertEquals('242', (string) $new_invoice->total);
+        $this->assertEquals('42', (string) $new_invoice->tax);
+    }
+
+    /** @test */
+    public function canAddAmountExclTaxAmountAndTaxPercentageToInvoice()
+    {
+        $this->service->create($this->customer);
+
+        $this->service->addTaxFixed('VAT', 21)->addAmountExclTax($this->product, 100, 'Some description');
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountExclTax($this->product, 100, 'Some description');
+
+        $this->assertEquals('242', (string) $this->service->getInvoice()->total);
+        $this->assertEquals('42', (string) $this->service->getInvoice()->tax);
+    }
+
+    /** @test */
+    public function canAddAmountInclTaxAmountAndTaxPercentageToInvoice()
+    {
+        $new_invoice = $this->service->create($this->customer)->getInvoice();
+
+        $this->service->addTaxFixed('VAT', 21)->addAmountInclTax($this->product, 121, 'Some description');
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Some description');
+
+        $this->assertEquals('242', (string) $new_invoice->total);
+        $this->assertEquals('42', (string) $new_invoice->tax);
+    }
+
+    /** @test */
+    public function canAddAmountExclMultipleTaxToInvoice()
+    {
+        $new_invoice = $this->service->create($this->customer);
+
+        $this->service
+            ->addTaxFixed('TAX1', 1)
+            ->addTaxPercentage('TAX2', 0.21)
+            ->addTaxFixed('TAX3', 30)
+            ->addAmountExclTax($this->product, 100, 'Some description');
+
+        $this->assertEquals('152', (string) $new_invoice->getInvoice()->total);
+        $this->assertEquals('52', (string) $new_invoice->getInvoice()->tax);
+    }
+
+    /** @test */
+    public function canAddAmountInclMultipleTaxToInvoice()
+    {
+        $new_invoice = $this->service->create($this->customer)->getInvoice();
+
+        $this->service
+            ->addTaxFixed('TAX1', 1)
+            ->addTaxPercentage('TAX2', 0.21)
+            ->addTaxFixed('TAX3', 30)
+            ->addAmountInclTax($this->product, 152, 'Some description');
+
+        $this->assertEquals('152', (string) $new_invoice->total);
+        $this->assertEquals('52', (string) $new_invoice->tax);
     }
 
     /** @test */
@@ -83,8 +161,8 @@ class InvoiceTest extends AbstractTestCase
     {
         $new_invoice = $this->service->create($this->customer)->getInvoice();
 
-        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
-        $this->service->addAmountInclTax($this->product, -121, 'Some negative amount description', 0.21);
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Some description');
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, -121, 'Some negative amount description');
 
         $this->assertEquals('0', (string) $new_invoice->total);
         $this->assertEquals('0', (string) $new_invoice->tax);
@@ -105,8 +183,8 @@ class InvoiceTest extends AbstractTestCase
     {
         $this->service->create($this->customer);
 
-        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
-        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Some description');
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Some description');
         $view = $this->service->view();
         $rendered = $view->render(); // fails if view cannot be rendered
         $this->assertTrue(true);
@@ -116,8 +194,8 @@ class InvoiceTest extends AbstractTestCase
     public function canGetInvoicePdf()
     {
         $this->service->create($this->customer);
-        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
-        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Some description');
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Some description');
         $pdf = $this->service->pdf();  // fails if pdf cannot be rendered
         $this->assertTrue(true);
     }
@@ -126,8 +204,8 @@ class InvoiceTest extends AbstractTestCase
     public function canDownloadInvoicePdf()
     {
         $this->service->create($this->customer);
-        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
-        $this->service->addAmountInclTax($this->product, 121, 'Some description', 0.21);
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Some description');
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Some description');
         $download = $this->service->download(); // fails if pdf cannot be rendered
         $this->assertTrue(true);
     }
@@ -172,8 +250,8 @@ class InvoiceTest extends AbstractTestCase
     {
         $new_invoice = $this->service->create($this->customer)->getInvoice();
 
-        $this->service->setFree()->addAmountExclTax($this->product, 100, 'Free sale', 0.21);
-        $this->service->addAmountExclTax($this->product, 100, 'Some description', 0.21);
+        $this->service->setFree()->addTaxPercentage('VAT', 0.21)->addAmountExclTax($this->product, 100, 'Free sale');
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountExclTax($this->product, 100, 'Some description');
 
         $this->assertEquals('121', (string) $new_invoice->total);
         $this->assertEquals('21', (string) $new_invoice->tax);
@@ -185,8 +263,8 @@ class InvoiceTest extends AbstractTestCase
     {
         $new_invoice = $this->service->create($this->customer)->getInvoice();
 
-        $this->service->setComplimentary()->addAmountExclTax($this->product, 100, 'Complimentary sale', 0.21);
-        $this->service->addAmountExclTax($this->product, 100, 'Some description', 0.21);
+        $this->service->setComplimentary()->addTaxPercentage('VAT', 0.21)->addAmountExclTax($this->product, 100, 'Complimentary sale');
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountExclTax($this->product, 100, 'Some description');
 
         $this->assertEquals('121', (string) $new_invoice->total);
         $this->assertEquals('21', (string) $new_invoice->tax);
@@ -198,8 +276,8 @@ class InvoiceTest extends AbstractTestCase
     {
         $new_invoice = $this->service->create($this->customer)->getInvoice();
 
-        $this->service->setComplimentary()->addAmountExclTax($this->product, 100, 'Complimentary sale', 0.21);
-        $this->service->setFree()->addAmountInclTax($this->product, 121, 'Free sale', 0.21);
+        $this->service->setComplimentary()->addTaxPercentage('VAT', 0.21)->addAmountExclTax($this->product, 100, 'Complimentary sale');
+        $this->service->setFree()->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Free sale');
 
         $this->assertEquals('0', (string) $new_invoice->total);
         $this->assertEquals('0', (string) $new_invoice->tax);
@@ -211,9 +289,9 @@ class InvoiceTest extends AbstractTestCase
     {
         $new_invoice = $this->service->create($this->customer)->getInvoice();
 
-        $this->service->setComplimentary()->addAmountExclTax($this->product, 100, 'Complimentary sale', 0.21);
-        $this->service->setFree()->addAmountInclTax($this->product, 121, 'Free sale', 0.21);
-        $this->service->addAmountInclTax($this->product, 121, 'Regular sale', 0.21);
+        $this->service->setComplimentary()->addTaxPercentage('VAT', 0.21)->addAmountExclTax($this->product, 100, 'Complimentary sale');
+        $this->service->setFree()->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Free sale');
+        $this->service->addTaxPercentage('VAT', 0.21)->addAmountInclTax($this->product, 121, 'Regular sale');
 
         $this->assertEquals('121', (string) $new_invoice->total);
         $this->assertEquals('21', (string) $new_invoice->tax);

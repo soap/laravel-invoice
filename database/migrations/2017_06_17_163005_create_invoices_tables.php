@@ -41,7 +41,7 @@ class CreateInvoicesTables extends Migration
             $table->uuid('id')->primary();
             $table->bigInteger('amount')->default(0)->description('in cents, including tax');
             $table->bigInteger('tax')->default(0)->description('in cents');
-            $table->float('tax_percentage')->default(0);
+            $table->json('tax_details')->nullable()->default(null);
             $table->uuid('invoice_id')->index();
             $table->char('description', 255);
             $table->uuid('invoiceable_id');
