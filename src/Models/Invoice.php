@@ -1,12 +1,12 @@
 <?php
 
-namespace NeptuneSoftware\Invoicable\Models;
+namespace NeptuneSoftware\Invoice\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
-use NeptuneSoftware\Invoicable\InvoiceReferenceGenerator;
-use NeptuneSoftware\Invoicable\Scopes\InvoiceScope;
+use NeptuneSoftware\Invoice\InvoiceReferenceGenerator;
+use NeptuneSoftware\Invoice\Scopes\InvoiceScope;
 
 class Invoice extends Model
 {
@@ -35,7 +35,7 @@ class Invoice extends Model
     {
         parent::__construct($attributes);
 
-        $this->setTable(config('invoicable.table_names.invoices'));
+        $this->setTable(config('invoice.table_names.invoices'));
     }
 
     protected static function boot()
@@ -54,8 +54,8 @@ class Invoice extends Model
             $model->tax       = 0;
             $model->discount  = 0;
             $model->is_bill   = false;
-            $model->currency  = config('invoicable.default_currency', 'TRY');
-            $model->status    = config('invoicable.default_status', 'concept');
+            $model->currency  = config('invoice.default_currency', 'TRY');
+            $model->status    = config('invoice.default_status', 'concept');
             $model->reference = InvoiceReferenceGenerator::generate();
         });
     }

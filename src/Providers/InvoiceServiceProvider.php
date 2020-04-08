@@ -1,16 +1,14 @@
 <?php
 
-namespace NeptuneSoftware\Invoicable\Providers;
+namespace NeptuneSoftware\Invoice\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use NeptuneSoftware\Invoicable\Models\Bill;
-use NeptuneSoftware\Invoicable\Models\Invoice;
-use NeptuneSoftware\Invoicable\Services\BillService;
-use NeptuneSoftware\Invoicable\Interfaces\BillServiceInterface;
-use NeptuneSoftware\Invoicable\Interfaces\InvoiceServiceInterface;
-use NeptuneSoftware\Invoicable\Services\InvoiceService;
+use NeptuneSoftware\Invoice\Services\BillService;
+use NeptuneSoftware\Invoice\Interfaces\BillServiceInterface;
+use NeptuneSoftware\Invoice\Interfaces\InvoiceServiceInterface;
+use NeptuneSoftware\Invoice\Services\InvoiceService;
 
-class InvoicableServiceProvider extends ServiceProvider
+class InvoiceServiceProvider extends ServiceProvider
 {
     /**
      * Perform post-registration booting of services.
@@ -20,15 +18,15 @@ class InvoicableServiceProvider extends ServiceProvider
     public function boot()
     {
         $sourceViewsPath = __DIR__ . '/../../resources/views';
-        $this->loadViewsFrom($sourceViewsPath, 'invoicable');
+        $this->loadViewsFrom($sourceViewsPath, 'invoice');
 
         $this->publishes([
-            $sourceViewsPath => resource_path('views/vendor/invoicable'),
+            $sourceViewsPath => resource_path('views/vendor/invoice'),
         ], 'views');
 
         // Publish a config file
         $this->publishes([
-            __DIR__ . '/../../config/invoicable.php' => config_path('invoicable.php'),
+            __DIR__ . '/../../config/invoice.php' => config_path('invoice.php'),
         ], 'config');
 
         // Publish migrations
@@ -52,6 +50,6 @@ class InvoicableServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../config/invoicable.php', 'invoicable');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/invoice.php', 'invoice');
     }
 }

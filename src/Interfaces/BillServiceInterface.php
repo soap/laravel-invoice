@@ -1,10 +1,10 @@
 <?php
-namespace NeptuneSoftware\Invoicable\Interfaces;
+namespace NeptuneSoftware\Invoice\Interfaces;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use NeptuneSoftware\Invoicable\Models\Bill;
+use NeptuneSoftware\Invoice\Models\Bill;
 use Symfony\Component\HttpFoundation\Response;
 
 interface BillServiceInterface
@@ -12,7 +12,7 @@ interface BillServiceInterface
     /**
      * Generate bill referencing Eloquent model.
      *
-     * @param Model $model      Invoicable Eloquent model
+     * @param Model $model      Eloquent model with HasInvoice trait
      * @param array|null $bill  Bill attributes
      * @return $this
      */

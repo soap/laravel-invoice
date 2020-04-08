@@ -1,8 +1,8 @@
 <?php
-namespace NeptuneSoftware\Invoicable\Models;
+namespace NeptuneSoftware\Invoice\Models;
 
-use NeptuneSoftware\Invoicable\Scopes\BillScope;
-use NeptuneSoftware\Invoicable\Scopes\InvoiceScope;
+use NeptuneSoftware\Invoice\Scopes\BillScope;
+use NeptuneSoftware\Invoice\Scopes\InvoiceScope;
 
 class Bill extends Invoice
 {

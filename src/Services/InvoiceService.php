@@ -1,15 +1,15 @@
 <?php
 
 
-namespace NeptuneSoftware\Invoicable\Services;
+namespace NeptuneSoftware\Invoice\Services;
 
 use Dompdf\Dompdf;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
-use NeptuneSoftware\Invoicable\Models\Invoice;
-use NeptuneSoftware\Invoicable\MoneyFormatter;
-use NeptuneSoftware\Invoicable\Interfaces\InvoiceServiceInterface;
+use NeptuneSoftware\Invoice\Models\Invoice;
+use NeptuneSoftware\Invoice\MoneyFormatter;
+use NeptuneSoftware\Invoice\Interfaces\InvoiceServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class InvoiceService implements InvoiceServiceInterface
@@ -195,11 +195,11 @@ class InvoiceService implements InvoiceServiceInterface
      */
     public function view(array $data = []): \Illuminate\Contracts\View\View
     {
-        return View::make('invoicable::receipt', array_merge($data, [
+        return View::make('invoice::receipt', array_merge($data, [
             'invoice' => $this->invoice,
             'moneyFormatter' => new MoneyFormatter(
                 $this->invoice->currency,
-                config('invoicable.locale')
+                config('invoice.locale')
             ),
         ]));
     }

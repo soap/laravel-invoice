@@ -13,7 +13,7 @@ class CreateInvoicesTables extends Migration
      */
     public function up()
     {
-        $tableNames = config('invoicable.table_names');
+        $tableNames = config('invoice.table_names');
 
         Schema::create($tableNames['invoices'], function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -67,7 +67,7 @@ class CreateInvoicesTables extends Migration
      */
     public function down()
     {
-        $tableNames = config('invoicable.table_names');
+        $tableNames = config('invoice.table_names');
 
         Schema::dropIfExists($tableNames['invoice_lines']);
         Schema::dropIfExists($tableNames['invoices']);

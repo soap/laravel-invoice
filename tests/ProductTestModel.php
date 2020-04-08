@@ -1,15 +1,15 @@
 <?php
 
 
-namespace NeptuneSoftware\Invoicable;
+namespace NeptuneSoftware\Invoice;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use NeptuneSoftware\Invoicable\Traits\InvoicableTrait;
+use NeptuneSoftware\Invoice\Traits\HasInvoice;
 
 class ProductTestModel extends Model
 {
-    use InvoicableTrait;
+    use HasInvoice;
 
     public $incrementing = false;
 

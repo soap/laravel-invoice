@@ -1,6 +1,6 @@
 <?php
 
-namespace NeptuneSoftware\Invoicable;
+namespace NeptuneSoftware\Invoice;
 
 use Carbon\Carbon;
 
