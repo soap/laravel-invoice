@@ -4,6 +4,7 @@
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Total Downloads][ico-downloads]][link-downloads]
+[![Code Coverage](https://scrutinizer-ci.com/g/neptunesoftware/laravel-invoice/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/neptunesoftware/laravel-invoice/?branch=master)
 
 This package has been changed, updated and redistributed.
 To utilize original distribution, see [sandervanhooft/laravel-invoicable](https://github.com/sandervanhooft/laravel-invoicable)
