@@ -4,7 +4,12 @@ All Notable changes to `laravel-invoice` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
-## v0.1.0 - 2020-04-08
+## 2.0.1 - 2020-04-08
+### Changed
+- Version fixed in changelog
+- Test coverage
+
+## 2.0.0 - 2020-04-08
 
 ### Added
 - Bills for receiving invoices
@@ -23,8 +28,6 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ---
 
 #### ATTENTION
-This repository based on
-
 To follow original repository, please see [sandervanhooft/laravel-invoicable](https://github.com/sandervanhooft/laravel-invoicable).
 
 Former changes (changelog of original): [CHANGELOG.md](https://github.com/sandervanhooft/laravel-invoicable/blob/master/CHANGELOG.md)
