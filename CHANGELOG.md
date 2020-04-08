@@ -1,10 +1,10 @@
 # Changelog
 
-All Notable changes to `laravel-invoicable` will be documented in this file.
+All Notable changes to `laravel-invoice` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
-## v0.1.0 - 2020-04-07
+## v0.1.0 - 2020-04-08
 
 ### Added
 - Bills for receiving invoices
@@ -13,6 +13,7 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 - Service layer
 - Multiple tax for each invoice line
 - Supporting fixed or percentage tax
+- Configurable table names
 
 ### Changed
 - Package name

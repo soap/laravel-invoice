@@ -1,5 +1,5 @@
 <?php
-namespace NeptuneSoftware\Invoicable\Scopes;
+namespace NeptuneSoftware\Invoice\Scopes;
 
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Eloquent\Model;

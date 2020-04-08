@@ -1,11 +1,11 @@
 <?php
 
-namespace NeptuneSoftware\Invoicable\Traits;
+namespace NeptuneSoftware\Invoice\Traits;
 
-use NeptuneSoftware\Invoicable\Models\Bill;
-use NeptuneSoftware\Invoicable\Models\Invoice;
+use NeptuneSoftware\Invoice\Models\Bill;
+use NeptuneSoftware\Invoice\Models\Invoice;
 
-trait InvoicableTrait
+trait HasInvoice
 {
     /**
      * Set the polymorphic relation.

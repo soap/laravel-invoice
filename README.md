@@ -1,6 +1,6 @@
-# laravel-invoicable
+# laravel-invoice
 
-![PHP Composer](https://github.com/neptunesoftware/laravel-invoicable/workflows/PHP%20Composer/badge.svg)
+![PHP Composer](https://github.com/neptunesoftware/laravel-invoice/workflows/PHP%20Composer/badge.svg)
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Total Downloads][ico-downloads]][link-downloads]
@@ -17,17 +17,27 @@ Easy invoice creation for Laravel. Unlike Laravel Cashier, this package is payme
 
 ## What is different?
 
-In order to follow changes, see [changelog](CHANGELOG.md) file. Basically, this package will be updated and maintained
-by Neptune Software.
+In order to follow changes, see [changelog](CHANGELOG.md) file.
 
 ## Structure
 
 ```
-database/
-resources
-src/
-tests/
-vendor/
+.
+├── config              # Configuration file
+├── database            # Database files
+│   └── migrations      
+├── resources           # Resource files 
+│   └── views           
+├── src                 # Soruce files
+│   ├── Interfaces      
+│   ├── Models          
+│   ├── Providers       
+│   ├── Scopes          
+│   ├── Services        
+│   └── Traits          
+└── tests               # Test files
+    ├── Feature         
+    └── Unit            
 ```
 
 ## Install
@@ -35,23 +45,13 @@ vendor/
 Via Composer
 
 ``` bash
-$ composer require neptunesoftware/laravel-invoicable
-```
-
-Next, you must install the service provider if you work with Laravel 5.4:
-
-``` php
-// config/app.php
-'providers' => [
-    ...
-    NeptuneSoftware\Invoicable\Providers\InvoicableServiceProvider::class,
-];
+$ composer require neptunesoftware/laravel-invoice
 ```
 
 You can publish the migration with:
 
 ``` bash
-$ php artisan vendor:publish --provider="NeptuneSoftware\Invoicable\Providers\InvoicableServiceProvider" --tag="migrations"
+$ php artisan vendor:publish --provider="NeptuneSoftware\Invoice\Providers\InvoiceServiceProvider" --tag="migrations"
 ```
 
 After the migration has been published you can create the invoices and invoice_lines tables by running the migrations:
@@ -60,10 +60,10 @@ After the migration has been published you can create the invoices and invoice_l
 $ php artisan migrate
 ```
 
-Optionally, you can also publish the `invoicable.php` config file with:
+Optionally, you can also publish the `invoice.php` config file with:
 
 ``` bash
-$ php artisan vendor:publish --provider="NeptuneSoftware\Invoicable\Providers\InvoicableServiceProvider" --tag="config"
+$ php artisan vendor:publish --provider="NeptuneSoftware\Invoice\Providers\InvoiceServiceProvider" --tag="config"
 ```
 
 This is what the default config file looks like:
@@ -74,35 +74,39 @@ return [
     'default_currency' => 'TRY',
     'default_status' => 'concept',
     'locale' => 'tr_TR',
+    'table_names' => [
+        'invoices' => 'invoices',
+        'invoice_lines' => 'invoice_lines',
+    ]
 ];
 ```
 
 If you'd like to override the design of the invoice blade view and pdf, publish the view:
 
 ``` bash
-$ php artisan vendor:publish --provider="NeptuneSoftware\Invoicable\Providers\InvoicableServiceProvider" --tag="views"
+$ php artisan vendor:publish --provider="NeptuneSoftware\Invoice\Providers\InvoiceServiceProvider" --tag="views"
 ```
 
-You can now edit `receipt.blade.php` in `<project_root>/resources/views/invoicable/receipt.blade.php` to match your style.
+You can now edit `receipt.blade.php` in `<project_root>/resources/views/invoice/receipt.blade.php` to match your style.
 
 
 ## Usage
 
 __Money figures are in cents!__
 
-Add the invoicable trait to the Eloquent model which needs to be invoiced (typically an Order model):
+Add the HasInvoice trait to the Eloquent model which needs to send or receive invoices (typically a Customer or Company model):
 
 ``` php
 use Illuminate\Database\Eloquent\Model;
-use NeptuneSoftware\Invoicable\IsInvoicable\InvoicableTrait;
+use NeptuneSoftware\Invoice\Traits\HasInvoice;
 
 class Order extends Model
 {
-    use InvoicableTrait; // enables the ->invoices() Eloquent relationship
+    use HasInvoice; // enables the ->invoices() Eloquent relationship
 }
 ```
 
-Now you can create invoices for an Order:
+Now you can create invoices for a customer:
 
 
 ``` php
@@ -112,22 +116,32 @@ $service = $service->create($customer); // Injected dependency
 
 // To add a line to the invoice, use these example parameters:
 //  Amount:
-//      121 (€1,21) incl tax
-//      100 (€1,00) excl tax
+//      118 (₺1,18) incl tax
+//      100 (₺1,00) excl tax
 //  Description: 'Some description'
-//  Tax percentage: 0.21 (21%)
-$service->setReference($product)->addAmountInclTax(121, 'Some description', 0.21);
-$service->setReference($product)->addAmountExclTax(100, 'Some description', 0.21);
+//  Tax percentage: 0.18 (18%)
+
+# Scenerio 1:
+$service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($product, 118, 'Some description');
+$service->addTaxPercentage('VAT', 0.18)->addAmountExclTax($product, 100, 'Some description');
+
+# Scenerio 2:
+$service->addTaxFixed('VAT', 18)->addAmountInclTax($product, 118, 'Some description');
+$service->addTaxFixed('VAT', 18)->addAmountExclTax($product, 100, 'Some description');
+
+# Scenerio 3 for taxes:
+$service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($product, 118, 'Some description');
+$service->addTaxFixed('VAT', 18)->addAmountExclTax($product, 100, 'Some description');
 
 // Invoice totals are now updated
 $invoice = $service->getInvoice();
-echo $invoice->total; // 242
-echo $invoice->tax; // 42
+echo $invoice->total; // 236
+echo $invoice->tax; // 36
 
 // Set additional information (optional)
 $invoice->currency; // defaults to 'TRY' (see config file)
 $invoice->status; // defaults to 'concept' (see config file)
-$invoice->receiver_info; // defaults to null
+$invoice->receiver_info; // defaul ts to null
 $invoice->sender_info; // defaults to null
 $invoice->payment_info; // defaults to null
 $invoice->note; // defaults to null
@@ -142,10 +156,10 @@ $service->pdf(); // or just grab the pdf (raw bytes)
 
 // Handling discounts
 // By adding a line with a negative amount.
-$invoice = $invoice->setReference($product)->addAmountInclTax(-121, 'A nice discount', 0.21);
+$invoice = $invoice->setReference($product)->addAmountInclTax(-118, 'A nice discount', 0.18);
 
 // Or by applying the discount and discribing the discount manually
-$invoice = $invoice->setReference($product)->addAmountInclTax(121 * (1 - 0.30), 'Product XYZ incl 30% discount', 0.21);
+$invoice = $invoice->setReference($product)->addAmountInclTax(118 * (1 - 0.30), 'Product XYZ incl 30% discount', 0.18);
 
 // Convenience methods
 $service->findByReference($reference);
@@ -168,10 +182,6 @@ $ composer test
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
 
-## Security
-
-If you discover any security related issues, please email info@neptunyazilim.com instead of using the issue tracker.
-
 ## Credits
 - [Burak](https://github.com/ikidnapmyself)
 - [Fatih](https://github.com/kablanfatih)
@@ -184,10 +194,10 @@ If you discover any security related issues, please email info@neptunyazilim.com
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/neptunesoftware/laravel-invoicable.svg
+[ico-version]: https://img.shields.io/packagist/v/neptunesoftware/laravel-invoice.svg
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg
-[ico-downloads]: https://img.shields.io/packagist/dt/neptunesoftware/laravel-invoicable.svg
+[ico-downloads]: https://img.shields.io/packagist/dt/neptunesoftware/laravel-invoice.svg
 
-[link-packagist]: https://packagist.org/packages/neptunesoftware/laravel-invoicable
-[link-downloads]: https://packagist.org/packages/neptunesoftware/laravel-invoicable
+[link-packagist]: https://packagist.org/packages/neptunesoftware/laravel-invoice
+[link-downloads]: https://packagist.org/packages/neptunesoftware/laravel-invoice
 [link-contributors]: ../../contributors

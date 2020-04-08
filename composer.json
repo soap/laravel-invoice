@@ -1,5 +1,5 @@
 {
-    "name": "neptunesoftware/laravel-invoicable",
+    "name": "neptunesoftware/laravel-invoice",
     "type": "library",
     "description": "Easy invoice generation using Laravel Eloquent",
     "keywords": [
@@ -7,11 +7,11 @@
         "invoicable",
         "invoice",
         "Laravel",
-        "laravel-invoicable",
+        "laravel-invoice",
         "payments",
         "neptunesoftware"
     ],
-    "homepage": "https://github.com/neptunesoftware/laravel-invoicable",
+    "homepage": "https://github.com/neptunesoftware/laravel-invoice",
     "license": "MIT",
     "authors": [
         {
@@ -44,12 +44,12 @@
     },
     "autoload": {
         "psr-4": {
-            "NeptuneSoftware\\Invoicable\\": "src"
+            "NeptuneSoftware\\Invoice\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "NeptuneSoftware\\Invoicable\\": "tests"
+            "NeptuneSoftware\\Invoice\\": "tests"
         }
     },
     "scripts": {
@@ -63,7 +63,7 @@
         },
         "laravel": {
             "providers": [
-                "NeptuneSoftware\\Invoicable\\Providers\\InvoicableServiceProvider"
+                "NeptuneSoftware\\Invoice\\Providers\\InvoiceServiceProvider"
             ]
         }
     },

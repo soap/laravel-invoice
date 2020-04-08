@@ -1,6 +1,6 @@
 <?php
 
-namespace NeptuneSoftware\Invoicable\Models;
+namespace NeptuneSoftware\Invoice\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -28,7 +28,7 @@ class InvoiceLine extends Model
     {
         parent::__construct($attributes);
 
-        $this->setTable(config('invoicable.table_names.invoice_lines'));
+        $this->setTable(config('invoice.table_names.invoice_lines'));
     }
 
     protected static function boot()
