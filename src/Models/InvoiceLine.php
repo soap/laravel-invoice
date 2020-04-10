@@ -4,6 +4,7 @@ namespace NeptuneSoftware\Invoice\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use NeptuneSoftware\Invoice\Scopes\InvoiceScope;
 
 class InvoiceLine extends Model
 {
@@ -47,5 +48,10 @@ class InvoiceLine extends Model
     public function invoice()
     {
         return $this->belongsTo(Invoice::class);
+    }
+
+    public function bill()
+    {
+        return $this->belongsTo(Bill::class, 'invoice_id')->withoutGlobalScope(InvoiceScope::class);
     }
 }

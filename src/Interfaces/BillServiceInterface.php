@@ -130,4 +130,12 @@ interface BillServiceInterface
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function findByReferenceOrFail(string $reference): Bill;
+
+    /**
+     * Find bills model by invoiceLines.
+     *
+     * @param Model $model
+     * @return Collection
+     */
+    public function findByInvoicable(Model $model): Collection;
 }

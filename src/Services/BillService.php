@@ -58,7 +58,7 @@ class BillService implements BillServiceInterface
      */
     public function getLines(): Collection
     {
-        return $this->getBill()->lines();
+        return $this->getBill()->lines()->get();
     }
 
     /**
@@ -255,5 +255,12 @@ class BillService implements BillServiceInterface
     public function findByReferenceOrFail(string $reference): Bill
     {
         return Bill::where('reference', $reference)->withoutGlobalScope(InvoiceScope::class)->firstOrFail();
+    }
+    /**
+     * @inheritDoc
+     */
+    public function findByInvoicable(Model $model): Collection
+    {
+        return $model->bill()->get();
     }
 }
