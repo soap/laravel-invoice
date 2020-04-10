@@ -54,4 +54,12 @@ class InvoiceLine extends Model
     {
         return $this->belongsTo(Bill::class, 'invoice_id')->withoutGlobalScope(InvoiceScope::class);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function related()
+    {
+        return $this->morphTo();
+    }
 }

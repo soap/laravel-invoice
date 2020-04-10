@@ -2,8 +2,8 @@
 namespace NeptuneSoftware\Invoice\Interfaces;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use NeptuneSoftware\Invoice\Models\Invoice;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -138,4 +138,12 @@ interface InvoiceServiceInterface
      * @return Collection
      */
     public function findByInvoicable(Model $model): Collection;
+
+    /**
+     * Find invoices model by related.
+     *
+     * @param Model $model
+     * @return Invoice
+     */
+    public function findByRelated(Model $model): Collection;
 }
