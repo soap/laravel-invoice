@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use NeptuneSoftware\Invoice\AbstractTestCase;
 use NeptuneSoftware\Invoice\CustomerTestModel;
 use NeptuneSoftware\Invoice\Interfaces\InvoiceServiceInterface;
+use NeptuneSoftware\Invoice\Models\InvoiceLine;
 use NeptuneSoftware\Invoice\ProductTestModel;
 
 class InvoiceTest extends AbstractTestCase
@@ -296,5 +297,19 @@ class InvoiceTest extends AbstractTestCase
         $this->assertEquals('118', (string) $new_invoice->total);
         $this->assertEquals('18', (string) $new_invoice->tax);
         $this->assertEquals('236', (string) $new_invoice->discount);
+    }
+
+    /** @test */
+    public function canFindByInvoicable()
+    {
+        $new_invoice = $this->service->create($this->customer);
+
+        $this->service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($this->product, 118, 'Some description');
+        $this->service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($this->product, 118, 'Some description');
+
+        $line = $new_invoice->getLines()->first();
+        $invoice =  $this->service->findByInvoicable($line);
+
+        $this->assertEquals($invoice[0]->id, $new_invoice->getInvoice()->id);
     }
 }

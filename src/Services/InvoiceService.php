@@ -253,4 +253,12 @@ class InvoiceService implements InvoiceServiceInterface
     {
         return Invoice::where('reference', $reference)->firstOrFail();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function findByInvoicable(Model $model): Collection
+    {
+        return $model->invoice()->get();
+    }
 }
