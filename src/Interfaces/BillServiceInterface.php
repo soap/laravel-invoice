@@ -138,4 +138,12 @@ interface BillServiceInterface
      * @return Collection
      */
     public function findByInvoicable(Model $model): Collection;
+
+    /**
+     * Find bills model by related.
+     *
+     * @param Model $model
+     * @return Collection
+     */
+    public function findByRelated(Model $model): Collection;
 }

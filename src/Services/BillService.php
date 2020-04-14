@@ -263,4 +263,14 @@ class BillService implements BillServiceInterface
     {
         return $model->bill()->get();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function findByRelated(Model $model): Collection
+    {
+        return collect($model->invoiceLines()->get())->map(function ($item) {
+            return $item->invoice()->get();
+        });
+    }
 }

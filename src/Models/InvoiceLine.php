@@ -18,6 +18,8 @@ class InvoiceLine extends Model
         'invoiceable_type', 'name', 'discount', 'quantity', 'is_free', 'is_complimentary'
     ];
 
+    protected $with = ['invoice'];
+
     protected $casts = [
         'tax_details' => 'array'
     ];
