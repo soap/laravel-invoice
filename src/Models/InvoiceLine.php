@@ -48,4 +48,17 @@ class InvoiceLine extends Model
     {
         return $this->belongsTo(Invoice::class);
     }
+
+    public function bill()
+    {
+        return $this->belongsTo(Bill::class, 'invoice_id');
+    }
+
+    /**
+     * Get the owning invoiceable model.
+     */
+    public function invoiceable()
+    {
+        return $this->morphTo();
+    }
 }

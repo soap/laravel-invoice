@@ -2,8 +2,8 @@
 namespace NeptuneSoftware\Invoice\Interfaces;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use NeptuneSoftware\Invoice\Models\Invoice;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -130,4 +130,20 @@ interface InvoiceServiceInterface
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function findByReferenceOrFail(string $reference): Invoice;
+
+    /**
+     * Find invoices model by invoiceLines.
+     *
+     * @param Model $model
+     * @return Collection
+     */
+    public function findByInvoiceable(Model $model): Collection;
+
+    /**
+     * Find invoices model by related.
+     *
+     * @param Model $model
+     * @return Collection
+     */
+    public function findByRelated(Model $model): Collection;
 }

@@ -2,30 +2,12 @@
 
 namespace NeptuneSoftware\Invoice\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use NeptuneSoftware\Invoice\InvoiceReferenceGenerator;
 use NeptuneSoftware\Invoice\Scopes\InvoiceScope;
 
-class Invoice extends Model
+class Invoice extends BaseModel
 {
-
-    use SoftDeletes;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'related_id', 'related_type', 'tax',  'total', 'discount', 'currency',
-        'reference', 'status', 'receiver_info', 'sender_info', 'payment_info', 'note', 'is_bill'
-    ];
-
-    protected $guarded = [];
-
-    public $incrementing = false;
 
     /**
      * Invoice constructor.
@@ -38,6 +20,11 @@ class Invoice extends Model
         $this->setTable(config('invoice.table_names.invoices'));
     }
 
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
     protected static function boot()
     {
         parent::boot();
@@ -59,21 +46,4 @@ class Invoice extends Model
             $model->reference = InvoiceReferenceGenerator::generate();
         });
     }
-
-    /**
-     * Get the invoice lines for this invoice
-     */
-    public function lines()
-    {
-        return $this->hasMany(InvoiceLine::class);
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
-     */
-    public function related()
-    {
-        return $this->morphTo();
-    }
-
 }

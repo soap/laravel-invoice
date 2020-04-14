@@ -4,8 +4,8 @@
 namespace NeptuneSoftware\Invoice\Services;
 
 use Dompdf\Dompdf;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\View;
 use NeptuneSoftware\Invoice\Models\Invoice;
 use NeptuneSoftware\Invoice\MoneyFormatter;
@@ -88,8 +88,8 @@ class InvoiceService implements InvoiceServiceInterface
     public function addTaxPercentage(string $identifier, float $taxPercentage = 0): InvoiceServiceInterface
     {
         array_push($this->taxes, [
-            'identifier'     => $identifier,
-            'tax_fixed'      => null,
+            'identifier' => $identifier,
+            'tax_fixed' => null,
             'tax_percentage' => $taxPercentage,
         ]);
         return $this;
@@ -101,8 +101,8 @@ class InvoiceService implements InvoiceServiceInterface
     public function addTaxFixed(string $identifier, int $taxFixed = 0): InvoiceServiceInterface
     {
         array_unshift($this->taxes, [
-            'identifier'     => $identifier,
-            'tax_fixed'      => $taxFixed,
+            'identifier' => $identifier,
+            'tax_fixed' => $taxFixed,
             'tax_percentage' => null,
         ]);
         return $this;
@@ -119,13 +119,13 @@ class InvoiceService implements InvoiceServiceInterface
         }
 
         $this->invoice->lines()->create([
-            'amount'           => $amount + $tax,
-            'description'      => $description,
-            'tax'              => $tax,
-            'tax_details'      => $this->taxes,
-            'invoiceable_id'   => $model->id,
+            'amount' => $amount + $tax,
+            'description' => $description,
+            'tax' => $tax,
+            'tax_details' => $this->taxes,
+            'invoiceable_id' => $model->id,
             'invoiceable_type' => get_class($model),
-            'is_free'          => $this->is_free,
+            'is_free' => $this->is_free,
             'is_complimentary' => $this->is_comp,
         ]);
 
@@ -151,12 +151,12 @@ class InvoiceService implements InvoiceServiceInterface
         }
 
         $this->invoice->lines()->create([
-            'amount'           => $amount,
-            'description'      => $description,
-            'tax'              => $tax,
-            'invoiceable_id'   => $model->id,
+            'amount' => $amount,
+            'description' => $description,
+            'tax' => $tax,
+            'invoiceable_id' => $model->id,
             'invoiceable_type' => get_class($model),
-            'is_free'          => $this->is_free,
+            'is_free' => $this->is_free,
             'is_complimentary' => $this->is_comp,
         ]);
 
@@ -170,22 +170,22 @@ class InvoiceService implements InvoiceServiceInterface
      */
     public function recalculate(): Invoice
     {
-        $lines         = $this->getLines();
-        $free          = $lines->where('is_free', true)->toBase();
+        $lines = $this->getLines();
+        $free = $lines->where('is_free', true)->toBase();
         $complimentary = $lines->where('is_complimentary', true)->toBase();
-        $other         = $lines->where('is_free', false)
-                               ->where('is_complimentary', false)
-                               ->toBase();
+        $other = $lines->where('is_free', false)
+            ->where('is_complimentary', false)
+            ->toBase();
 
-        $this->invoice->total    = $other->sum('amount');
-        $this->invoice->tax      = $other->sum('tax');
+        $this->invoice->total = $other->sum('amount');
+        $this->invoice->tax = $other->sum('tax');
         $this->invoice->discount = $free->sum('amount') + $complimentary->sum('amount') + $other->sum('discount');
 
         $this->invoice->save();
 
         $this->is_free = false;
         $this->is_comp = false;
-        $this->taxes   = [];
+        $this->taxes = [];
 
         return $this->invoice;
     }
@@ -209,11 +209,11 @@ class InvoiceService implements InvoiceServiceInterface
      */
     public function pdf(array $data = []): string
     {
-        if (! defined('DOMPDF_ENABLE_AUTOLOAD')) {
+        if (!defined('DOMPDF_ENABLE_AUTOLOAD')) {
             define('DOMPDF_ENABLE_AUTOLOAD', false);
         }
 
-        if (file_exists($configPath = base_path().'/vendor/dompdf/dompdf/dompdf_config.inc.php')) {
+        if (file_exists($configPath = base_path() . '/vendor/dompdf/dompdf/dompdf_config.inc.php')) {
             require_once $configPath;
         }
 
@@ -232,7 +232,7 @@ class InvoiceService implements InvoiceServiceInterface
 
         return new Response($this->pdf($data), 200, [
             'Content-Description' => 'File Transfer',
-            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             'Content-Transfer-Encoding' => 'binary',
             'Content-Type' => 'application/pdf',
         ]);
@@ -252,5 +252,26 @@ class InvoiceService implements InvoiceServiceInterface
     public function findByReferenceOrFail(string $reference): Invoice
     {
         return Invoice::where('reference', $reference)->firstOrFail();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findByInvoiceable(Model $model): Collection
+    {
+        /*
+         * In order to receive invoices by polymorphic relationship, we pluck invoice ids to find invoices.
+         */
+        $invoices = $model->invoiceLines()->get('invoice_id')->pluck('invoice_id')->unique();
+
+        return Invoice::find($invoices);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findByRelated(Model $model): Collection
+    {
+        return $model->invoices()->get();
     }
 }

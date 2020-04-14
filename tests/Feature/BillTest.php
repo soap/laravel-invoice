@@ -298,4 +298,31 @@ class BillTest extends AbstractTestCase
         $this->assertEquals('18', (string) $new_bill->tax);
         $this->assertEquals('236', (string) $new_bill->discount);
     }
+
+    /** @test */
+    public function canFindByInvoicable()
+    {
+        $new_bill = $this->service->create($this->customer);
+
+        $this->service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($this->product, 118, 'Some description');
+        $this->service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($this->product, 118, 'Some description');
+
+        $bills = $this->service->findByInvoiceable($this->product);
+
+
+        $this->assertTrue($bills->where('id', $new_bill->getBill()->id)->count() === 1);
+    }
+
+    /** @test */
+    public function canFindByRelated()
+    {
+        $new_bill = $this->service->create($this->customer);
+
+        $this->service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($this->product, 118, 'Some description');
+        $this->service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($this->product, 118, 'Some description');
+
+        $bills = $this->service->findByRelated($this->customer);
+
+        $this->assertTrue($bills->where('id', $new_bill->getBill()->id)->count() === 1);
+    }
 }

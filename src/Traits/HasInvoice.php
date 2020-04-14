@@ -4,6 +4,7 @@ namespace NeptuneSoftware\Invoice\Traits;
 
 use NeptuneSoftware\Invoice\Models\Bill;
 use NeptuneSoftware\Invoice\Models\Invoice;
+use NeptuneSoftware\Invoice\Models\InvoiceLine;
 
 trait HasInvoice
 {

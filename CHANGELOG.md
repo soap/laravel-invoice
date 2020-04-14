@@ -4,6 +4,13 @@ All Notable changes to `laravel-invoice` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## 2.0.2 - 2020-04-14
+### Added
+- IsInvoiceable trait for "product" like models
+- `findByInvoiceable()` method for collecting invoices by invoiced models
+- `findByRelated()` method for collecting invoices by invoice receiver models
+- BaseModel created
+
 ## 2.0.1 - 2020-04-08
 ### Changed
 - Version fixed in changelog

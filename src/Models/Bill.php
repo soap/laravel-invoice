@@ -1,15 +1,23 @@
 <?php
+
 namespace NeptuneSoftware\Invoice\Models;
 
+use Illuminate\Support\Str;
+use NeptuneSoftware\Invoice\InvoiceReferenceGenerator;
 use NeptuneSoftware\Invoice\Scopes\BillScope;
-use NeptuneSoftware\Invoice\Scopes\InvoiceScope;
 
-class Bill extends Invoice
+class Bill extends BaseModel
 {
+    /**
+     * Invoice constructor.
+     * @param array $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
 
-    protected $guarded = [];
-
-    public $incrementing = false;
+        $this->setTable(config('invoice.table_names.invoices'));
+    }
 
     /**
      * The "booting" method of the model.
@@ -21,16 +29,20 @@ class Bill extends Invoice
         parent::boot();
         static::addGlobalScope(new BillScope());
         static::creating(function ($model) {
-            $model->is_bill = true;
+            /**
+             * @var \Illuminate\Database\Eloquent\Model $model
+             */
+            if (!$model->getKey()) {
+                $model->{$model->getKeyName()} = Str::uuid()->toString();
+            }
+
+            $model->total     = 0;
+            $model->tax       = 0;
+            $model->discount  = 0;
+            $model->is_bill   = true;
+            $model->currency  = config('invoice.default_currency', 'TRY');
+            $model->status    = config('invoice.default_status', 'concept');
+            $model->reference = InvoiceReferenceGenerator::generate();
         });
     }
-
-    /**
-     * Get the invoice lines for this invoice
-     */
-    public function lines()
-    {
-        return $this->hasMany(InvoiceLine::class, 'invoice_id')->withoutGlobalScope(InvoiceScope::class);
-    }
-
 }

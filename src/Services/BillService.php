@@ -6,6 +6,7 @@ namespace NeptuneSoftware\Invoice\Services;
 use Dompdf\Dompdf;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\View;
 use NeptuneSoftware\Invoice\Interfaces\BillServiceInterface;
 use NeptuneSoftware\Invoice\Models\Bill;
@@ -58,7 +59,7 @@ class BillService implements BillServiceInterface
      */
     public function getLines(): Collection
     {
-        return $this->getBill()->lines();
+        return $this->getBill()->lines()->get();
     }
 
     /**
@@ -255,5 +256,26 @@ class BillService implements BillServiceInterface
     public function findByReferenceOrFail(string $reference): Bill
     {
         return Bill::where('reference', $reference)->withoutGlobalScope(InvoiceScope::class)->firstOrFail();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findByInvoiceable(Model $model): Collection
+    {
+        /*
+         * In order to receive invoices by polymorphic relationship, we pluck invoice ids to find invoices.
+         */
+        $bills = $model->invoiceLines()->get('invoice_id')->pluck('invoice_id')->unique();
+
+        return Bill::find($bills);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findByRelated(Model $model): Collection
+    {
+        return $model->bills()->get();
     }
 }
