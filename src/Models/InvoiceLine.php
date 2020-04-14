@@ -4,8 +4,6 @@ namespace NeptuneSoftware\Invoice\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use NeptuneSoftware\Invoice\Scopes\BillScope;
-use NeptuneSoftware\Invoice\Scopes\InvoiceScope;
 
 class InvoiceLine extends Model
 {
@@ -17,8 +15,6 @@ class InvoiceLine extends Model
         'amount', 'tax', 'tax_details', 'invoice_id', 'description', 'invoiceable_id',
         'invoiceable_type', 'name', 'discount', 'quantity', 'is_free', 'is_complimentary'
     ];
-
-    protected $with = ['invoice'];
 
     protected $casts = [
         'tax_details' => 'array'
@@ -55,9 +51,7 @@ class InvoiceLine extends Model
 
     public function bill()
     {
-        return $this->belongsTo(Bill::class, 'invoice_id')
-            ->withoutGlobalScope(InvoiceScope::class)
-            ->withGlobalScope('bill', new BillScope());
+        return $this->belongsTo(Bill::class, 'invoice_id');
     }
 
     /**
