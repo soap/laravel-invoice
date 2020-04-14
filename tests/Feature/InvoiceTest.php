@@ -306,10 +306,9 @@ class InvoiceTest extends AbstractTestCase
         $this->service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($this->product, 118, 'Some description');
         $this->service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($this->product, 118, 'Some description');
 
-        $line = $new_invoice->getLines()->first();
-        $invoice =  $this->service->findByInvoicable($line);
+        $invoices = $this->service->findByInvoiceable($this->product);
 
-        $this->assertEquals($invoice[0]->id, $new_invoice->getInvoice()->id);
+        $this->assertTrue($invoices->where('id', $new_invoice->getInvoice()->id)->count() === 1);
     }
 
     /** @test */
@@ -320,8 +319,8 @@ class InvoiceTest extends AbstractTestCase
         $this->service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($this->product, 118, 'Some description');
         $this->service->addTaxPercentage('VAT', 0.18)->addAmountInclTax($this->product, 118, 'Some description');
 
-        $related = $this->service->findByRelated($this->product);
+        $invoices = $this->service->findByRelated($this->customer);
 
-        $this->assertEquals($related->first()->first()->id, $new_invoice->getInvoice()->id);
+        $this->assertTrue($invoices->where('id', $new_invoice->getInvoice()->id)->count() === 1);
     }
 }

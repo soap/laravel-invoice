@@ -4,6 +4,7 @@ namespace NeptuneSoftware\Invoice\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use NeptuneSoftware\Invoice\Scopes\BillScope;
 use NeptuneSoftware\Invoice\Scopes\InvoiceScope;
 
 class InvoiceLine extends Model
@@ -52,13 +53,15 @@ class InvoiceLine extends Model
 
     public function bill()
     {
-        return $this->belongsTo(Bill::class, 'invoice_id')->withoutGlobalScope(InvoiceScope::class);
+        return $this->belongsTo(Bill::class, 'invoice_id')
+            ->withoutGlobalScope(InvoiceScope::class)
+            ->withGlobalScope('bill', new BillScope());
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * Get the owning invoiceable model.
      */
-    public function related()
+    public function invoiceable()
     {
         return $this->morphTo();
     }

@@ -257,9 +257,14 @@ class InvoiceService implements InvoiceServiceInterface
     /**
      * @inheritDoc
      */
-    public function findByInvoicable(Model $model): Collection
+    public function findByInvoiceable(Model $model): Collection
     {
-        return $model->invoice()->get();
+        /*
+         * In order to receive invoices by polymorphic relationship, we pluck invoice ids to find invoices.
+         */
+        $invoices = $model->invoiceLines()->get('invoice_id')->pluck('invoice_id')->unique();
+
+        return Invoice::find($invoices);
     }
 
     /**
@@ -267,8 +272,6 @@ class InvoiceService implements InvoiceServiceInterface
      */
     public function findByRelated(Model $model): Collection
     {
-        return collect($model->invoiceLines()->get())->map(function ($item) {
-            return $item->invoice()->get();
-        });
+        return $model->invoices()->get();
     }
 }

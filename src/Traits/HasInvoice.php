@@ -25,14 +25,4 @@ trait HasInvoice
     {
         return $this->morphMany(Bill::class, 'related');
     }
-
-    /**
-     * Set the polymorphic relation.
-     *
-     * @return mixed
-     */
-    public function invoiceLines()
-    {
-        return $this->morphMany(InvoiceLine::class, 'invoiceable');
-    }
 }

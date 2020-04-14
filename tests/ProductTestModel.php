@@ -5,11 +5,11 @@ namespace NeptuneSoftware\Invoice;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use NeptuneSoftware\Invoice\Traits\HasInvoice;
+use NeptuneSoftware\Invoice\Traits\IsInvoiceable;
 
 class ProductTestModel extends Model
 {
-    use HasInvoice;
+    use IsInvoiceable;
 
     public $incrementing = false;
 

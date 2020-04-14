@@ -137,13 +137,13 @@ interface InvoiceServiceInterface
      * @param Model $model
      * @return Collection
      */
-    public function findByInvoicable(Model $model): Collection;
+    public function findByInvoiceable(Model $model): Collection;
 
     /**
      * Find invoices model by related.
      *
      * @param Model $model
-     * @return Invoice
+     * @return Collection
      */
     public function findByRelated(Model $model): Collection;
 }
