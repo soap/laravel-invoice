@@ -4,6 +4,10 @@ All Notable changes to `laravel-invoice` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## 2.0.2 - 2020-04-21
+### Added
+- Illuminate Support ^7.0
+
 ## 2.0.2 - 2020-04-14
 ### Added
 - IsInvoiceable trait for "product" like models
