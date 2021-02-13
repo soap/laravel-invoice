@@ -1,11 +1,11 @@
 <?php
 
-namespace NeptuneSoftware\Invoice\Unit;
+namespace Soap\Invoices\Unit;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use NeptuneSoftware\Invoice\AbstractTestCase;
-use NeptuneSoftware\Invoice\InvoiceReferenceGenerator;
+use Soap\Invoices\AbstractTestCase;
+use Soap\Invoices\InvoiceReferenceGenerator;
 
 class InvoiceReferenceTest extends AbstractTestCase
 {

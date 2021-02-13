@@ -1,20 +1,20 @@
 # laravel-invoice
 
-![PHP Composer](https://github.com/neptunesoftware/laravel-invoice/workflows/PHP%20Composer/badge.svg)
+![PHP Composer](https://github.com/soap/laravel-invoice/workflows/PHP%20Composer/badge.svg)
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Total Downloads][ico-downloads]][link-downloads]
-[![Code Coverage](https://scrutinizer-ci.com/g/neptunesoftware/laravel-invoice/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/neptunesoftware/laravel-invoice/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/soap/laravel-invoice/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/neptunesoftware/laravel-invoice/?branch=master)
 
 This package has been changed, updated and redistributed.
-To utilize original distribution, see [sandervanhooft/laravel-invoicable](https://github.com/sandervanhooft/laravel-invoicable)
+To utilize original distribution, see [NeptuneSoftware/laravel-invoice](https://github.com/neptunesoftware/laravel-invoice)
 repository.
 
 **IMPORTANT**
-> This fork is going to be maintained by @neptunesoftware and 
+> This fork is going to be maintained by Prasit Gebsaap and 
 > it's not compatible with original repository.
 
-Easy invoice creation for Laravel. Unlike Laravel Cashier, this package is payment gateway agnostic.
+Easy invoices creation for Laravel. Unlike Laravel Cashier, this package is payment gateway agnostic.
 
 ## What is different?
 
@@ -46,13 +46,13 @@ In order to follow changes, see [changelog](CHANGELOG.md) file.
 Via Composer
 
 ``` bash
-$ composer require neptunesoftware/laravel-invoice
+$ composer require soap/laravel-invoices
 ```
 
 You can publish the migration with:
 
 ``` bash
-$ php artisan vendor:publish --provider="NeptuneSoftware\Invoice\Providers\InvoiceServiceProvider" --tag="migrations"
+$ php artisan vendor:publish --provider="Soap\Invoices\Providers\InvoicesServiceProvider" --tag="migrations"
 ```
 
 After the migration has been published you can create the invoices and invoice_lines tables by running the migrations:
@@ -61,10 +61,10 @@ After the migration has been published you can create the invoices and invoice_l
 $ php artisan migrate
 ```
 
-Optionally, you can also publish the `invoice.php` config file with:
+Optionally, you can also publish the `invoices.php` config file with:
 
 ``` bash
-$ php artisan vendor:publish --provider="NeptuneSoftware\Invoice\Providers\InvoiceServiceProvider" --tag="config"
+$ php artisan vendor:publish --provider="Soap\Invoices\Providers\InvoicesServiceProvider" --tag="config"
 ```
 
 This is what the default config file looks like:
@@ -72,9 +72,9 @@ This is what the default config file looks like:
 ``` php
 
 return [
-    'default_currency' => 'TRY',
-    'default_status' => 'concept',
-    'locale' => 'tr_TR',
+    'default_currency' => 'THB',
+    'default_status' => 'draft',
+    'locale' => 'th_TH',
     'table_names' => [
         'invoices' => 'invoices',
         'invoice_lines' => 'invoice_lines',
@@ -85,7 +85,7 @@ return [
 If you'd like to override the design of the invoice blade view and pdf, publish the view:
 
 ``` bash
-$ php artisan vendor:publish --provider="NeptuneSoftware\Invoice\Providers\InvoiceServiceProvider" --tag="views"
+$ php artisan vendor:publish --provider="Soap\Invoices\Providers\InvoiceServiceProvider" --tag="views"
 ```
 
 You can now edit `receipt.blade.php` in `<project_root>/resources/views/invoice/receipt.blade.php` to match your style.
@@ -99,11 +99,11 @@ Add the HasInvoice trait to the Eloquent model which needs to send or receive in
 
 ``` php
 use Illuminate\Database\Eloquent\Model;
-use NeptuneSoftware\Invoice\Traits\HasInvoice;
+use Soap\Invoices\Traits\HasInvoice;
 
 class Order extends Model
 {
-    use HasInvoice; // enables the ->invoices() Eloquent relationship
+    use HasInvoices; // enables the ->invoices() Eloquent relationship
 }
 ```
 
@@ -195,10 +195,10 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/neptunesoftware/laravel-invoice.svg
+[ico-version]: https://img.shields.io/packagist/v/soap/laravel-invoices.svg
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg
-[ico-downloads]: https://img.shields.io/packagist/dt/neptunesoftware/laravel-invoice.svg
+[ico-downloads]: https://img.shields.io/packagist/dt/soap/laravel-invoices.svg
 
-[link-packagist]: https://packagist.org/packages/neptunesoftware/laravel-invoice
-[link-downloads]: https://packagist.org/packages/neptunesoftware/laravel-invoice
+[link-packagist]: https://packagist.org/packages/soap/laravel-invoices
+[link-downloads]: https://packagist.org/packages/soap/laravel-invoices
 [link-contributors]: ../../contributors

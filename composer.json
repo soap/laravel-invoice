@@ -1,33 +1,22 @@
 {
-    "name": "neptunesoftware/laravel-invoice",
+    "name": "soap/laravel-invoices",
     "type": "library",
-    "description": "Easy invoice generation using Laravel Eloquent",
+    "description": "Easy invoices generation using Laravel Eloquent",
     "keywords": [
         "Eloquent",
         "invoicable",
-        "invoice",
+        "invoices",
         "Laravel",
-        "laravel-invoice",
-        "payments",
-        "neptunesoftware"
+        "laravel-invoices",
+        "payments"
     ],
-    "homepage": "https://github.com/neptunesoftware/laravel-invoice",
+    "homepage": "https://github.com/soap/laravel-invoices",
     "license": "MIT",
     "authors": [
         {
-            "name": "Burak <ikidnapmyself>",
-            "email": "burak@myself.com",
-            "homepage": "https://github.com/ikidnapmyself"
-        },
-        {
-            "name": "Fatih <kablanfatih>",
-            "email": "kablanfatih34@gmail.com",
-            "homepage": "https://github.com/kablanfatih"
-        },
-        {
-            "name": "Ugur <ugurdnlr>",
-            "email": "ugurdinler0@gmail.com",
-            "homepage": "https://github.com/ugurdnlr"
+            "name": "Prasit Gebsaap <soap>",
+            "email": "prasit.gebsaapk@gmail.com",
+            "homepage": "https://github.com/soap"
         }
     ],
     "require": {
@@ -44,12 +33,12 @@
     },
     "autoload": {
         "psr-4": {
-            "NeptuneSoftware\\Invoice\\": "src"
+            "soap\\Invoices\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "NeptuneSoftware\\Invoice\\": "tests"
+            "soap\\Invoices\\": "tests"
         }
     },
     "scripts": {
@@ -63,7 +52,7 @@
         },
         "laravel": {
             "providers": [
-                "NeptuneSoftware\\Invoice\\Providers\\InvoiceServiceProvider"
+                "Soap\\Invoices\\Providers\\InvoicesServiceProvider"
             ]
         }
     },

@@ -1,15 +1,15 @@
 <?php
 
 
-namespace NeptuneSoftware\Invoice\Services;
+namespace Soap\Invoices\Services;
 
 use Dompdf\Dompdf;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\View;
-use NeptuneSoftware\Invoice\Models\Invoice;
-use NeptuneSoftware\Invoice\MoneyFormatter;
-use NeptuneSoftware\Invoice\Interfaces\InvoiceServiceInterface;
+use Soap\Invoices\Models\Invoice;
+use Soap\Invoices\MoneyFormatter;
+use Soap\Invoices\Interfaces\InvoiceServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class InvoiceService implements InvoiceServiceInterface

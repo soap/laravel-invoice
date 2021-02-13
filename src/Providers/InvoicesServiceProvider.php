@@ -1,14 +1,14 @@
 <?php
 
-namespace NeptuneSoftware\Invoice\Providers;
+namespace Soap\Invoices\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use NeptuneSoftware\Invoice\Services\BillService;
-use NeptuneSoftware\Invoice\Interfaces\BillServiceInterface;
-use NeptuneSoftware\Invoice\Interfaces\InvoiceServiceInterface;
-use NeptuneSoftware\Invoice\Services\InvoiceService;
+use Soap\Invoics\Services\BillService;
+use Soap\Invoices\Interfaces\BillServiceInterface;
+use Soap\Invoices\Interfaces\InvoiceServiceInterface;
+use Soap\Invoices\Services\InvoiceService;
 
-class InvoiceServiceProvider extends ServiceProvider
+class InvoicesServiceProvider extends ServiceProvider
 {
     /**
      * Perform post-registration booting of services.

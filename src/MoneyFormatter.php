@@ -1,6 +1,6 @@
 <?php
 
-namespace NeptuneSoftware\Invoice;
+namespace Soap\Invoices;
 
 class MoneyFormatter
 {

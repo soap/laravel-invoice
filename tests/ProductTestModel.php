@@ -1,11 +1,11 @@
 <?php
 
 
-namespace NeptuneSoftware\Invoice;
+namespace Soap\Invoices;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use NeptuneSoftware\Invoice\Traits\IsInvoiceable;
+use Soap\Invoices\Traits\IsInvoiceable;
 
 class ProductTestModel extends Model
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace NeptuneSoftware\Invoice\Unit;
+namespace Soap\Invoices\Unit;
 
-use NeptuneSoftware\Invoice\AbstractTestCase;
-use NeptuneSoftware\Invoice\MoneyFormatter;
+use Soap\Invoices\AbstractTestCase;
+use Soap\Invoices\MoneyFormatter;
 
 class MoneyFormatterTest extends AbstractTestCase
 {

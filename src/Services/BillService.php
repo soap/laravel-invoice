@@ -1,17 +1,17 @@
 <?php
 
 
-namespace NeptuneSoftware\Invoice\Services;
+namespace Soap\Invoices\Services;
 
 use Dompdf\Dompdf;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\View;
-use NeptuneSoftware\Invoice\Interfaces\BillServiceInterface;
-use NeptuneSoftware\Invoice\Models\Bill;
-use NeptuneSoftware\Invoice\MoneyFormatter;
-use NeptuneSoftware\Invoice\Scopes\InvoiceScope;
+use Soap\Invoices\Interfaces\BillServiceInterface;
+use Soap\Invoices\Models\Bill;
+use Soap\Invoices\MoneyFormatter;
+use Soap\Invoices\Scopes\InvoiceScope;
 use Symfony\Component\HttpFoundation\Response;
 
 class BillService implements BillServiceInterface

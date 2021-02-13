@@ -1,12 +1,12 @@
 <?php
 
-namespace NeptuneSoftware\Invoice\Feature;
+namespace Soap\Invoices\Feature;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use NeptuneSoftware\Invoice\AbstractTestCase;
-use NeptuneSoftware\Invoice\CustomerTestModel;
-use NeptuneSoftware\Invoice\Interfaces\InvoiceServiceInterface;
-use NeptuneSoftware\Invoice\ProductTestModel;
+use Soap\Invoices\AbstractTestCase;
+use Soap\Invoices\CustomerTestModel;
+use Soap\Invoices\Interfaces\InvoiceServiceInterface;
+use Soap\Invoices\ProductTestModel;
 
 class InvoiceTest extends AbstractTestCase
 {

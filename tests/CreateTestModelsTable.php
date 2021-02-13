@@ -1,6 +1,6 @@
 <?php
 
-namespace NeptuneSoftware\Invoice;
+namespace Soap\Invoices;
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;

@@ -4,7 +4,7 @@ namespace NeptuneSoftware\Invoice\Traits;
 
 use NeptuneSoftware\Invoice\Models\InvoiceLine;
 
-trait IsInvoiceable
+trait Invoiceable
 {
     /**
      * Set the polymorphic relation.

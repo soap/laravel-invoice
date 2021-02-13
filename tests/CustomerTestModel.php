@@ -1,9 +1,9 @@
 <?php
-namespace NeptuneSoftware\Invoice;
+namespace Soap\Invoices;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use NeptuneSoftware\Invoice\Traits\HasInvoice;
+use Soap\Invoices\Traits\HasInvoice;
 
 class CustomerTestModel extends Model
 {

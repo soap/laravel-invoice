@@ -1,10 +1,10 @@
 <?php
 
-namespace NeptuneSoftware\Invoice\Models;
+namespace Soap\Invoices\Models;
 
 use Illuminate\Support\Str;
-use NeptuneSoftware\Invoice\InvoiceReferenceGenerator;
-use NeptuneSoftware\Invoice\Scopes\InvoiceScope;
+use Soap\Invoices\InvoiceReferenceGenerator;
+use Soap\Invoices\Scopes\InvoiceScope;
 
 class Invoice extends BaseModel
 {

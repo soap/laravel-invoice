@@ -1,10 +1,10 @@
 <?php
-namespace NeptuneSoftware\Invoice\Interfaces;
+namespace Soap\Invoices\Interfaces;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use NeptuneSoftware\Invoice\Models\Invoice;
+use Soap\Invoice\Models\Invoice;
 use Symfony\Component\HttpFoundation\Response;
 
 interface InvoiceServiceInterface
