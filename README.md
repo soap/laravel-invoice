@@ -1,6 +1,6 @@
-# laravel-invoice
+# laravel-invoices
 
-![PHP Composer](https://github.com/soap/laravel-invoice/workflows/PHP%20Composer/badge.svg)
+![PHP Composer](https://github.com/soap/laravel-invoices/workflows/PHP%20Composer/badge.svg)
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Total Downloads][ico-downloads]][link-downloads]
