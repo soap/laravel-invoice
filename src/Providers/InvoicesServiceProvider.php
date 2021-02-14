@@ -26,13 +26,13 @@ class InvoicesServiceProvider extends ServiceProvider
 
         // Publish a config file
         $this->publishes([
-            __DIR__ . '/../../config/invoice.php' => config_path('invoice.php'),
+            __DIR__ . '/../../config/soap.invoices.php' => config_path('soap.invoices.php'),
         ], 'config');
 
         // Publish migrations
          $this->publishes([
-             __DIR__ . '/../../database/migrations/2017_06_17_163005_create_invoices_tables.php'
-             => database_path('migrations/2017_06_17_163005_create_invoices_tables.php'),
+             __DIR__ . '/../../database/migrations/2020_02_10_163005_create_invoices_tables.php'
+             => database_path('migrations/2020_02_10_163005_create_invoices_tables.php'),
          ], 'migrations');
 
         $this->app->bind(InvoiceServiceInterface::class, function ($app) {
@@ -50,6 +50,6 @@ class InvoicesServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../config/invoice.php', 'invoice');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/soap.invoices.php', 'soap.invoices');
     }
 }
