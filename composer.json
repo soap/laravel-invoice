@@ -23,7 +23,7 @@
         "php": "^7.2",
         "ext-intl": "*",
         "dompdf/dompdf": "^0.8.0",
-        "illuminate/support": "^5.8|^6.0|^7.0",
+        "illuminate/support": "^5.8|^6.0|^7.0|^8.0",
         "nesbot/carbon": "^1.22|^2.0"
     },
     "require-dev": {
@@ -33,12 +33,12 @@
     },
     "autoload": {
         "psr-4": {
-            "soap\\Invoices\\": "src"
+            "Soap\\Invoices\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "soap\\Invoices\\": "tests"
+            "Soap\\Invoices\\": "tests"
         }
     },
     "scripts": {
