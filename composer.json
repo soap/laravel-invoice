@@ -52,7 +52,7 @@
         },
         "laravel": {
             "providers": [
-                "Soap\\Invoices\\Providers\\InvoicesServiceProvider"
+                "Soap\\Invoices\\Providers\\InvoiceServiceProvider"
             ]
         }
     },

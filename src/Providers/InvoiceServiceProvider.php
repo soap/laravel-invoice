@@ -8,7 +8,7 @@ use Soap\Invoices\Interfaces\BillServiceInterface;
 use Soap\Invoices\Interfaces\InvoiceServiceInterface;
 use Soap\Invoices\Services\InvoiceService;
 
-class InvoicesServiceProvider extends ServiceProvider
+class InvoiceServiceProvider extends ServiceProvider
 {
     /**
      * Perform post-registration booting of services.
